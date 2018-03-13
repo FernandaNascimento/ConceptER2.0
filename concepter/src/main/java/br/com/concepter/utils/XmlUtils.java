@@ -5,26 +5,24 @@
  */
 package br.com.concepter.utils;
 
-import br.com.concepter.model.beans.Entidade;
-import br.com.concepter.model.beans.Entidades;
-import br.com.concepter.model.beans.Relacao;
-import br.com.concepter.model.enuns.TipoObrigatoriedadeEnum;
-import br.com.concepter.view.TelaPrincipal;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.List;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import br.com.concepter.model.beans.Entidade;
+import br.com.concepter.model.beans.Entidades;
+
 /**
  *
  * @author AllanMagnum
  */
-public class XmlUtils<T> {
+public class XmlUtils {
     
     public void save(List<Entidade> entidades, FileOutputStream os) throws FileNotFoundException{
         try {            

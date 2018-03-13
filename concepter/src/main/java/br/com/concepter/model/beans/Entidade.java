@@ -17,7 +17,11 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Entidade implements Serializable{
     
-    private Integer id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Integer id;
     private String nome;
     private TipoEntidadeEnum tipo;
     @XmlTransient
