@@ -6,6 +6,7 @@
 
 package br.com.concepter.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -66,7 +68,7 @@ public class AreaGrafica extends JInternalFrame {
 	private Relacionamento relacionamento = null;
 
 	private JPopupMenu menuPopup;
-	private JMenu menuComplitude;
+	private JMenu menuCompletude;
 	private JMenu menuCardinalidade;
 	private JMenuItem menuItemDelete;
 	private JMenuItem menuItemBinario;
@@ -88,6 +90,10 @@ public class AreaGrafica extends JInternalFrame {
 		this.areaGrafico.getGraphControl().addMouseListener(new ObjetoMer_Selecionado());
 		this.areaGrafico.getGraphControl().addMouseListener(new ObjetoMer_RigthClick());
 		this.areaGrafico.getGraphControl().addMouseListener(new BotaoEsquerdoCliqueGrafico());
+		
+		//this.areaGrafico.putClientProperty("DropAllowed", Boolean.FALSE);
+		//this.areaGrafico.setBorder( BorderFactory.createLineBorder(Color.gray));
+
 		this.areaGrafico.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -102,7 +108,7 @@ public class AreaGrafica extends JInternalFrame {
 
 		this.grafico.setEdgeLabelsMovable(false);   //Nao permite que a descricao da seta seja movida
 		this.grafico.setCellsDisconnectable(false); //Nao Permite que as setas sejam desconectadas
-		this.grafico.setCellsResizable(false);      //Nao Permite que os objetos sejam redimensionados
+		//this.grafico.setCellsResizable(false);      //Nao Permite que os objetos sejam redimensionados
 
 		areaGrafico.setConnectable(false); // Nao permite que setas sejam criadas de dentro de um objeto
 		areaGrafico.getGraphHandler().setRemoveCellsFromParent(false); //Nao permiti que os objetos sejam removidos do objetos pai
@@ -122,7 +128,7 @@ public class AreaGrafica extends JInternalFrame {
 		//Menu popup para Objetos Mer
 		menuPopup = new JPopupMenu();
 
-		menuComplitude = new JMenu("Completude");
+		menuCompletude = new JMenu("Completude");
 		menuCardinalidade = new JMenu("Cardinalidade");
 
 		//Item para o Menu popup de Objetos Mer
@@ -164,8 +170,48 @@ public class AreaGrafica extends JInternalFrame {
 		return py;
 	}
 
+	public Integer getCont_entidade() {
+		return cont_entidade;
+	}
+
+	public Integer getCont_relacionamento() {
+		return cont_relacionamento;
+	}
+
+	public Integer getCont_atributo() {
+		return cont_atributo;
+	}
+
 	public void setCont_atributo(Integer cont_atributo) {
 		this.cont_atributo = cont_atributo;
+	}
+	
+	public void setCont_entidade(Integer cont_entidade) {
+		this.cont_entidade = cont_entidade;
+	}
+
+	public void setCont_relacionamento(Integer cont_relacionamento) {
+		this.cont_relacionamento = cont_relacionamento;
+	}
+
+	public void setMapaGraficoEntidades(HashMap<Integer, Entidade> mapaGraficoEntidades) {
+		this.mapaGraficoEntidades = mapaGraficoEntidades;
+	}
+
+	public void setMapaGraficoAtributos(HashMap<Integer, Atributo> mapaGraficoAtributos) {
+		this.mapaGraficoAtributos = mapaGraficoAtributos;
+	}
+
+	public void setMapaGraficoRelacionamentos(HashMap<Integer, Relacionamento> mapaGraficoRelacionamentos) {
+		this.mapaGraficoRelacionamentos = mapaGraficoRelacionamentos;
+	}
+
+	public void setMapaGraficoEspecializacao(HashMap<Integer, Especializacao> mapaGraficoEspecializacao) {
+		this.mapaGraficoEspecializacao = mapaGraficoEspecializacao;
+	}
+
+	public void setMapaGraficoAgregacao(HashMap<Integer, Agregacao> mapaGraficoAgregacao) {
+		this.mapaGraficoAgregacao = mapaGraficoAgregacao;
 	}
 
 	public HashMap<Integer, Entidade> getMapaGraficoEntidades() {
@@ -199,7 +245,7 @@ public class AreaGrafica extends JInternalFrame {
 	}
 
 	private void limparMenuPopup(){
-		menuComplitude.removeAll();
+		menuCompletude.removeAll();
 		menuCardinalidade.removeAll();
 
 		menuParcialidade.removeAll();
@@ -208,7 +254,7 @@ public class AreaGrafica extends JInternalFrame {
 		menu1n.removeAll();
 		menuNn.removeAll();
 
-		menuPopup.remove(menuComplitude);
+		menuPopup.remove(menuCompletude);
 		menuPopup.remove(menuCardinalidade);
 		menuPopup.remove(menuAgregacao);
 	}
@@ -419,7 +465,7 @@ public class AreaGrafica extends JInternalFrame {
 					}
 
 					if(isRelacionamento){
-						menuPopup.add(menuComplitude);
+						menuPopup.add(menuCompletude);
 						menuPopup.add(menuCardinalidade);
 						Set<Entidade> entidades = relacionamentoSelecionado.getEntidades().keySet();
 						for (Entidade entidade : entidades) {
@@ -441,7 +487,7 @@ public class AreaGrafica extends JInternalFrame {
 							jmiParcil.addActionListener(new OnClickJMenuItemComplitude());
 
 							menuCardinalidade.add(jmCardinalidade);
-							menuComplitude.add(jmComplitude);
+							menuCompletude.add(jmComplitude);
 						}
 
 					}

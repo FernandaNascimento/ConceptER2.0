@@ -11,5 +11,5 @@ package br.com.concepter.model.enuns;
  * @author AllanMagnum
  */
 public enum TipoEspecializacaoEnum {
-    DISJUNCAO, SOBREPOSICAO;
+    CONTEM, DISJUNCAO, SOBREPOSICAO;
 }

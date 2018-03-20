@@ -12,6 +12,7 @@ import javax.swing.JFileChooser;
 import org.apache.commons.lang3.StringUtils;
 
 import br.com.concepter.model.beans.Entidade;
+import br.com.concepter.model.beans.SavedObject;
 import br.com.concepter.utils.FileUtils;
 import br.com.concepter.utils.XmlUtils;
 import br.com.concepter.view.AreaGrafica;
@@ -26,20 +27,13 @@ public class ConceptERController {
 		
 		
 		if(StringUtils.isNotEmpty(pathFile)) {
-			fileUtils.saveGraph(areaGrafica.getAreaGrafico(), pathFile);
 			
-			List<Entidade> entidades = new ArrayList<Entidade>();
-			
-			for (Integer key : areaGrafica.getMapaGraficoEntidades().keySet()) {
-				
-				Entidade entidade = areaGrafica.getMapaGraficoEntidades().get(key);
-				
-				entidades.add(entidade);           
-			} 
+			SavedObject savedObject = new SavedObject(areaGrafica);
+			savedObject.setGraph(fileUtils.saveGraph(areaGrafica.getAreaGrafico(), pathFile));
 			
 			try {
-				FileOutputStream os = new FileOutputStream(pathFile+ ".xml");
-				xmlUtils.save( entidades, os);
+				FileOutputStream os = new FileOutputStream(pathFile.replaceAll(".xml","")+ ".xml");
+				xmlUtils.save(savedObject, os);
 				return true;
 			} catch (FileNotFoundException ex) {
 				Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);

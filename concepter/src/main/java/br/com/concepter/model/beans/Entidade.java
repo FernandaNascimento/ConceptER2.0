@@ -10,39 +10,42 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+
 public class Entidade implements Serializable{
     
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
 	private Integer id;
     private String nome;
     private TipoEntidadeEnum tipo;
-    @XmlTransient
+    
     private Especializacao especializacao;
-    @XmlElementWrapper
+    
     private List<Relacionamento> relacionamentos = new ArrayList<Relacionamento>();
-    @XmlElementWrapper
+    
     private List<Atributo> atributos = new ArrayList<>();
     
     @XmlTransient
     private mxGraph grafico;
+    
     @XmlTransient
     private mxCell cell;
-    @XmlTransient
+    
     private double pX;
-    @XmlTransient
+    
     private double pY;
-    @XmlTransient
+    
     private int tamanhoLargura;
-    @XmlTransient
+    
     private int tamanhoAltura;
+    
     @XmlTransient
     private HashMap<Integer, Entidade> mapaGraficoEntidade;
 
@@ -87,6 +90,7 @@ public class Entidade implements Serializable{
                 this.cell = (mxCell)entidade;
                 this.mapaGraficoEntidade.put( Integer.valueOf( ((mxCell) entidade).getId() ), this);
                 this.grafico.getModel().endUpdate();
+                this.grafico.refresh();
             }
             return (mxCell)entidade;
     }
@@ -122,6 +126,7 @@ public class Entidade implements Serializable{
                     especializacao.getEntidades().add(this);
                     this.mapaGraficoEntidade.put( Integer.valueOf( cell.getId() ), this);
                     this.grafico.getModel().endUpdate();
+                    this.grafico.refresh();
             }
     }
     
@@ -172,7 +177,7 @@ public class Entidade implements Serializable{
     public void setAtributos(List<Atributo> atributos) {
         this.atributos = atributos;
     }
-  
+    @XmlTransient
     public mxGraph getGrafico() {
         return grafico;
     }
@@ -180,7 +185,7 @@ public class Entidade implements Serializable{
     public void setGrafico(mxGraph grafico) {
         this.grafico = grafico;
     }
-    
+    @XmlTransient
     public mxCell getCell() {
         return cell;
     }
@@ -224,7 +229,8 @@ public class Entidade implements Serializable{
     public HashMap<Integer, Entidade> getMapaGraficoEntidade() {
         return mapaGraficoEntidade;
     }
-
+    
+    @XmlTransient
     public void setMapaGraficoEntidade(HashMap<Integer, Entidade> mapaGraficoEntidade) {
         this.mapaGraficoEntidade = mapaGraficoEntidade;
     }

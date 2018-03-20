@@ -2,6 +2,8 @@ package br.com.concepter.model.beans;
 
 import br.com.concepter.model.enuns.TipoAtributoEnum;
 import com.mxgraph.model.mxCell;
+import com.mxgraph.util.mxConstants;
+
 import java.util.HashMap;
 import com.mxgraph.view.mxGraph;
 import java.util.ArrayList;
@@ -71,7 +73,7 @@ public class Atributo {
             caracteristicas = "fillColor=white;shape=ellipse;";
         }
         if(tipoAtributo == TipoAtributoEnum.CHAVE){
-            caracteristicas = "fillColor=white;shape=ellipse;fontStyle=1;";
+            caracteristicas = "fillColor=white;shape=ellipse;"+mxConstants.STYLE_FONTSTYLE+"="+mxConstants.FONT_UNDERLINE;
         }
         if(tipoAtributo == TipoAtributoEnum.COMPOSTO){
             caracteristicas = "fillColor=white;shape=ellipse;";
@@ -135,6 +137,7 @@ public class Atributo {
             this.forma = (mxCell) atributo;
             this.mapaGraficoAtributos.put( Integer.valueOf( ((mxCell) atributo).getId() ), this );
             this.grafico.getModel().endUpdate();
+            this.grafico.refresh();
         }
     }
 

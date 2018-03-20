@@ -15,14 +15,20 @@ public class Agregacao {
     private List<Atributo> atributos = new ArrayList<>();
     private Relacionamento relacionamento;
     
+    @XmlTransient
     private mxGraph grafico;
+    @XmlTransient
     private mxCell cell;
+    
     private double pY;
     private double pX;
     private int tamanhoLargura;
     private int tamanhoAltura;
     
+    @XmlTransient
     private HashMap<Integer, Relacionamento> mapaGraficoRelacionamentos;
+    
+    @XmlTransient
     private HashMap<Integer, Agregacao> mapaGraficoAgregacao;
 
     public Agregacao() {
@@ -50,8 +56,8 @@ public class Agregacao {
             try{	
                 
                 if (relacionamento_entidade instanceof Relacionamento){
-                    posx =  relacionamento.getCell().getGeometry().getX() -20;
-                    posy = relacionamento.getCell().getGeometry().getY() -20;
+                    posx =  ((Relacionamento)relacionamento_entidade).getCell().getGeometry().getX() -20;
+                    posy =  ((Relacionamento)relacionamento_entidade).getCell().getGeometry().getY() -20;
                         
                     relacionamento_entidade = this.grafico.insertVertex(parent, null, null, posx, posy, this.tamanhoLargura, tamanhoAltura, "verticalAlign=top;fillColor=none;shape=rectangle;");
                 }else{
@@ -59,15 +65,15 @@ public class Agregacao {
                 }
                 
                 if (relacionamento_entidade_1 instanceof Relacionamento){
-                    posx =  relacionamento.getCell().getGeometry().getX() -20;
-                    posy = relacionamento.getCell().getGeometry().getY() -20;
+                    posx =  ((Relacionamento)relacionamento_entidade_1).getCell().getGeometry().getX() -20;
+                    posy = ((Relacionamento)relacionamento_entidade_1).getCell().getGeometry().getY() -20;
                         
                     relacionamento_entidade_1 = this.grafico.insertVertex(parent, null, null, posx, posy, this.tamanhoLargura, tamanhoAltura, "verticalAlign=top;fillColor=none;shape=rectangle;");
                 }else{
-                    ((mxCell)relacionamento_entidade_1).getGeometry().setRect(20, 20, 100, 50);
+                	((Entidade)relacionamento_entidade_1).getCell().getGeometry().setRect(20, 20, 100, 50);
                 }
 
-                this.grafico.addCell(((mxCell)relacionamento_entidade), relacionamento_entidade_1);
+                this.grafico.addCell(((mxCell)relacionamento_entidade), ((Entidade)relacionamento_entidade_1).getCell());
                
                 Relacionamento relacionamento_agregacao = new Relacionamento(grafico, mapaGraficoRelacionamentos, "Relacionamento", posx + 220, posy + 20);
 
@@ -77,6 +83,7 @@ public class Agregacao {
                 this.mapaGraficoAgregacao.put( Integer.valueOf( ((mxCell) relacionamento_entidade).getId() ), this );
                 
                 this.grafico.getModel().endUpdate();
+                this.grafico.refresh();
             }
     }
 
@@ -104,6 +111,8 @@ public class Agregacao {
                 this.mapaGraficoAgregacao.put( Integer.valueOf( ((mxCell) agregacao).getId() ), this ) ;
                 
                 this.grafico.getModel().endUpdate();
+                this.grafico.refresh();
+                
             }
     }
 
@@ -133,6 +142,7 @@ public class Agregacao {
                 this.mapaGraficoAgregacao.put( Integer.valueOf( ((mxCell) agregacao).getId() ), this ) ;
          
                 this.grafico.getModel().endUpdate();
+                this.grafico.refresh();
             }
     }
 

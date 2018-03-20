@@ -57,6 +57,10 @@ public class Especializacao {
         this.grafico.getModel().beginUpdate();
         Object parent = this.grafico.getDefaultParent();
         
+        if(tipoEspecializacao == TipoEspecializacaoEnum.CONTEM){
+            nome = "c";
+        }
+        
         if(tipoEspecializacao == TipoEspecializacaoEnum.DISJUNCAO){
             nome = "d";
         }
@@ -68,25 +72,27 @@ public class Especializacao {
         Double posy = entidade.getCell().getGeometry().getY();
 
         try{	
-            this.cell = (mxCell) this.grafico.insertVertex(parent, null, this.nome, posx+40, posy+100, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=ellipse;");
             
             Entidade entidade_1 = new Entidade(this.grafico, mapaGraficoEntidades, "Entidade" + contEntidade, posx - 125, posy + 170, TipoEntidadeEnum.FORTE);
             entidade_1.add();
-            
-            Entidade entidade_2 = new Entidade(this.grafico, mapaGraficoEntidades, "Entidade" + ++contEntidade, posx + 125, posy + 170, TipoEntidadeEnum.FORTE);
-            entidade_2.add();
-            
             this.entidades.add(entidade_1);
-            this.entidades.add(entidade_2);
             
+            if(tipoEspecializacao != TipoEspecializacaoEnum.CONTEM){
+            	this.cell = (mxCell) this.grafico.insertVertex(parent, null, this.nome, posx+40, posy+100, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=ellipse;");
+                Entidade entidade_2 = new Entidade(this.grafico, mapaGraficoEntidades, "Entidade" + ++contEntidade, posx + 125, posy + 170, TipoEntidadeEnum.FORTE);
+                entidade_2.add();
+                this.entidades.add(entidade_2);
+                this.grafico.insertEdge(parent, null, "U", entidade_2.getCell(), this.cell,"startArrow=none;endArrow=none;");
+                this.grafico.insertEdge(parent, null, "", this.cell, entidade.getCell(),"startArrow=none;endArrow=none;dashed=1;");
+            } else {
+            	this.cell = entidade.getCell();            	
+            }
+                       
             entidade.setEspecializacao(this);
-            
-            this.grafico.insertEdge(parent, null, "", this.cell, entidade.getCell(),"startArrow=none;endArrow=none;dashed=1;");
-            
+                        
             mxStylesheet stylesheet = this.grafico.getStylesheet();
             
             String myStyleName = "myImageStyle";
-
             
             // define image style           
             Hashtable<String, Object> style = new Hashtable<String, Object>();
@@ -97,12 +103,12 @@ public class Especializacao {
             stylesheet.putCellStyle( myStyleName, style);
             
             this.grafico.insertEdge(parent, null, "U", entidade_1.getCell(), this.cell,"startArrow=none;endArrow=none;");
-            this.grafico.insertEdge(parent, null, "U", entidade_2.getCell(), this.cell,"startArrow=none;endArrow=none;");
         }
 
         finally{
             this.mapaGraficoEspecializacao.put( Integer.valueOf( this.cell.getId() ), this);
             this.grafico.getModel().endUpdate();
+            this.grafico.refresh();
         }
     }
 

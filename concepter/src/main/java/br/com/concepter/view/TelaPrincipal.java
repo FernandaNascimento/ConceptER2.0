@@ -12,6 +12,8 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,6 +22,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
+import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
@@ -40,16 +43,15 @@ import br.com.concepter.model.enuns.TipoAtributoEnum;
 import br.com.concepter.model.enuns.TipoEntidadeEnum;
 import br.com.concepter.model.enuns.TipoEspecializacaoEnum;
 import br.com.concepter.utils.FileUtils;
+import br.com.concepter.utils.XmlUtils;
+
 import java.awt.Dimension;
 import javax.swing.JMenuItem;
 import java.awt.Choice;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-/**
- *
- * @author AllanMagnum
- */
+
 public class TelaPrincipal extends javax.swing.JFrame {
 
 	/**
@@ -127,6 +129,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jSeparator15 = new javax.swing.JToolBar.Separator();
 		jToggleButton15 = new javax.swing.JToggleButton();
 		jSeparator14 = new javax.swing.JToolBar.Separator();
+		jToggleButton16 = new javax.swing.JToggleButton();
+		jSeparator23 = new javax.swing.JToolBar.Separator();
 		jMenuBarTelaPrincipal = new javax.swing.JMenuBar();
 		jMenu1 = new javax.swing.JMenu();
 		jMenuItem1 = new javax.swing.JMenuItem();
@@ -202,6 +206,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton1.setPreferredSize(new java.awt.Dimension(34, 23));
 		jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton1);
 				jToggleButton1ActionPerformed(evt);
 			}
 		});
@@ -216,6 +221,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton2);
 				jToggleButton2ActionPerformed(evt);
 			}
 		});
@@ -231,6 +237,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton3);
 				jToggleButton3ActionPerformed(evt);
 			}
 		});
@@ -245,6 +252,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton4.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton4);
 				jToggleButton4ActionPerformed(evt);
 			}
 		});
@@ -259,6 +267,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton5.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton5);
 				jToggleButton5ActionPerformed(evt);
 			}
 		});
@@ -273,6 +282,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton6.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton6);
 				jToggleButton6ActionPerformed(evt);
 			}
 		});
@@ -287,6 +297,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton7.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton7);
 				jToggleButton7ActionPerformed(evt);
 			}
 		});
@@ -302,6 +313,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton8.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton8);
 				jToggleButton8ActionPerformed(evt);
 			}
 		});
@@ -316,6 +328,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton9.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton9);
 				jToggleButton9ActionPerformed(evt);
 			}
 		});
@@ -330,14 +343,32 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton10.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton10);
 				jToggleButton10ActionPerformed(evt);
 			}
 		});
 		jToolBar1.add(jToggleButton10);
 		jToolBar1.add(jSeparator5);
 		jToolBar1.add(jSeparator19);
+		
+	
+		jToggleButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/concepter/view/resources/imagens/Círculo C.png"))); // NOI18N
+		jToggleButton16.setToolTipText("Contém");
+		jToggleButton16.setFocusable(false);
+		jToggleButton16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+		jToggleButton16.setPreferredSize(new java.awt.Dimension(34, 23));
+		jToggleButton16.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+		jToggleButton16.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton16);
+				jToggleButton16ActionPerformed(evt);
+			}
+		});
+		jToolBar1.add(jToggleButton16);
+		jToolBar1.add(jSeparator23);
 
-		jToggleButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/concepter/view/resources/imagens/Círculo C.png"))); // NOI18N
+
+		jToggleButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/concepter/view/resources/imagens/CirculoD.png"))); // NOI18N
 		jToggleButton11.setToolTipText("Disjunção");
 		jToggleButton11.setFocusable(false);
 		jToggleButton11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -345,6 +376,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton11.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton11.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton11);
 				jToggleButton11ActionPerformed(evt);
 			}
 		});
@@ -359,6 +391,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton12.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton12);
 				jToggleButton12ActionPerformed(evt);
 			}
 		});
@@ -374,6 +407,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton13.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton13.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton13);
 				jToggleButton13ActionPerformed(evt);
 			}
 		});
@@ -388,6 +422,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton14.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton14);
 				jToggleButton14ActionPerformed(evt);
 			}
 		});
@@ -402,6 +437,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 		jToggleButton15.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onlyOneButtonPressed(jToggleButton15);
 				jToggleButton15ActionPerformed(evt);
 			}
 		});
@@ -491,7 +527,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		JSplitPane inner = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				jToolBar1, graphOutline);
 		inner.setOneTouchExpandable(true);
-		inner.setDividerLocation(550);
+		inner.setDividerLocation(585);
 		inner.setResizeWeight(1);
 		inner.setDividerSize(7);
 		inner.setBorder(null);
@@ -568,7 +604,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		TelaPrincipal.jToggleButton14.setSelected(false);
 		TelaPrincipal.jToggleButton15.setSelected(false);
 	}
-
+	
 	public static int getBotao(){
 		return TelaPrincipal.botao;
 	}
@@ -624,6 +660,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		mxCell root = new mxCell();
 		root.insert(new mxCell());
 		graph.getModel().setRoot(root);
+		areaGrafica.setCont_atributo(0);
+		areaGrafica.setCont_entidade(0);
+		areaGrafica.setCont_relacionamento(0);
+		areaGrafica.getMapaGraficoAgregacao().clear();
+		areaGrafica.getMapaGraficoAtributos().clear();
+		areaGrafica.getMapaGraficoEntidades().clear();
+		areaGrafica.getMapaGraficoEspecializacao().clear();
+		areaGrafica.getMapaGraficoRelacionamentos().clear();
 		
 
 	}//GEN-LAST:event_jMenuItem2ActionPerformed
@@ -637,8 +681,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
 		if(jfc.showOpenDialog(jMenu1) == JFileChooser.APPROVE_OPTION){
 			PATH_FILE = jfc.getSelectedFile().getPath();
-			fileUtils.loadGraph(areaGrafica.getAreaGrafico(), PATH_FILE);
+			XmlUtils utils = new XmlUtils();
+			utils.load(PATH_FILE, areaGrafica);
+			//fileUtils.loadGraph(areaGrafica.getAreaGrafico(), PATH_FILE);
 			firePropertyChange("currentFile", new File(""), jfc.getSelectedFile());
+			
+			areaGrafica.getGrafico().refresh();
 		}
 	}//GEN-LAST:event_jMenuItem2ActionPerformed
 	/**
@@ -676,7 +724,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
 		if (botao == 0){
 			botao = 1;
-			tipoEntidade = tipoEntidade.FORTE;
+			tipoEntidade = TipoEntidadeEnum.FORTE;
 		}else {
 			botao = 0;
 			tipoEntidade = null;
@@ -686,7 +734,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
 		if (botao == 0){
 			botao = 1;
-			tipoEntidade = tipoEntidade.FRACA;
+			tipoEntidade = TipoEntidadeEnum.FRACA;
 		}else {
 			botao = 0;
 			tipoEntidade = null;
@@ -696,7 +744,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
 		if (botao == 0){
 			botao = 2;
-			tipoAtributo = tipoAtributo.SIMPLES;
+			tipoAtributo = TipoAtributoEnum.SIMPLES;
 		}else {
 			botao = 0;
 			tipoAtributo = null;
@@ -706,7 +754,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private void jToggleButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton4ActionPerformed
 		if (botao == 0){
 			botao = 2;
-			tipoAtributo = tipoAtributo.CHAVE;
+			tipoAtributo = TipoAtributoEnum.CHAVE;
 		}else {
 			botao = 0;
 			tipoAtributo = null;
@@ -810,6 +858,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
 			botao = 0;
 		}
 	}//GEN-LAST:event_jToggleButton15ActionPerformed
+	
+	private void jToggleButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton12ActionPerformed
+		if(botao == 0){
+			botao = 6;
+			tipoEspecializacao = tipoEspecializacao.CONTEM;
+		}else{
+			botao = 0;
+			tipoEspecializacao = null;
+		}
+	}//GEN-LAST:event_jToggleButton12ActionPerformed
 
 	private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
 		TelaSobre telaSobre = new TelaSobre(this, rootPaneCheckingEnabled);
@@ -850,6 +908,109 @@ public class TelaPrincipal extends javax.swing.JFrame {
         telaPrincipal.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 
+	public static void onlyOneButtonPressed(JToggleButton pressedButton) {
+		List<JToggleButton> botoes = new ArrayList<JToggleButton>();
+		botoes.add(jToggleButton1);
+		botoes.add(jToggleButton2);
+		botoes.add(jToggleButton3);
+		botoes.add(jToggleButton4);
+		botoes.add(jToggleButton5);
+		botoes.add(jToggleButton6);
+		botoes.add(jToggleButton7);
+		botoes.add(jToggleButton8);
+		botoes.add(jToggleButton9);
+		botoes.add(jToggleButton10);
+		botoes.add(jToggleButton11);
+		botoes.add(jToggleButton12);
+		botoes.add(jToggleButton13);
+		botoes.add(jToggleButton14);
+		botoes.add(jToggleButton15);
+		botoes.add(jToggleButton16);
+		
+		if(jToggleButton1==pressedButton) {
+			botoes.remove(jToggleButton1);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+			
+		} else if(jToggleButton2==pressedButton) {
+			botoes.remove(jToggleButton2);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton3==pressedButton) {
+			botoes.remove(jToggleButton3);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton4==pressedButton) {
+			botoes.remove(jToggleButton4);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton5==pressedButton) {
+			botoes.remove(jToggleButton5);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton6==pressedButton) {
+			botoes.remove(jToggleButton6);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton7==pressedButton) {
+			botoes.remove(jToggleButton7);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton8==pressedButton) {
+			botoes.remove(jToggleButton8);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton9==pressedButton) {
+			botoes.remove(jToggleButton9);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton10==pressedButton) {
+			botoes.remove(jToggleButton10);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton11==pressedButton) {
+			botoes.remove(jToggleButton11);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton12==pressedButton) {
+			botoes.remove(jToggleButton12);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton13==pressedButton) {
+			botoes.remove(jToggleButton13);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton14==pressedButton) {
+			botoes.remove(jToggleButton14);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		} else if(jToggleButton15==pressedButton) {
+			botoes.remove(jToggleButton15);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		}  else if(jToggleButton16==pressedButton) {
+			botoes.remove(jToggleButton1);
+			for (JToggleButton botao : botoes) {
+				botao.setSelected(false);
+			}
+		}
+	}
+
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private br.com.concepter.view.AreaGrafica areaGrafica;
 	private javax.swing.JButton jButton1;
@@ -880,6 +1041,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private javax.swing.JToolBar.Separator jSeparator20;
 	private javax.swing.JToolBar.Separator jSeparator21;
 	private javax.swing.JToolBar.Separator jSeparator22;
+	private javax.swing.JToolBar.Separator jSeparator23;
 	private javax.swing.JToolBar.Separator jSeparator3;
 	private javax.swing.JToolBar.Separator jSeparator4;
 	private javax.swing.JToolBar.Separator jSeparator5;
@@ -894,6 +1056,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private static javax.swing.JToggleButton jToggleButton13;
 	private static javax.swing.JToggleButton jToggleButton14;
 	private static javax.swing.JToggleButton jToggleButton15;
+	private static javax.swing.JToggleButton jToggleButton16;
 	private static javax.swing.JToggleButton jToggleButton2;
 	private static javax.swing.JToggleButton jToggleButton3;
 	private static javax.swing.JToggleButton jToggleButton4;
