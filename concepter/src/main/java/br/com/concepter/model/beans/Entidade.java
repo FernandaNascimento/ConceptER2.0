@@ -1,18 +1,16 @@
 package br.com.concepter.model.beans;
 
-import br.com.concepter.model.enuns.TipoEntidadeEnum;
-import com.mxgraph.model.mxCell;
-import com.mxgraph.view.mxGraph;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
+
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.mxgraph.model.mxCell;
+import com.mxgraph.view.mxGraph;
+
+import br.com.concepter.model.enuns.TipoEntidadeEnum;
 
 
 public class Entidade implements Serializable{
@@ -28,7 +26,6 @@ public class Entidade implements Serializable{
     
     private Especializacao especializacao;
     
-    private List<Relacionamento> relacionamentos = new ArrayList<Relacionamento>();
     
     private List<Atributo> atributos = new ArrayList<>();
     
@@ -88,6 +85,7 @@ public class Entidade implements Serializable{
             finally{
                 this.id = Integer.parseInt(((mxCell) entidade).getId());
                 this.cell = (mxCell)entidade;
+                
                 this.mapaGraficoEntidade.put( Integer.valueOf( ((mxCell) entidade).getId() ), this);
                 this.grafico.getModel().endUpdate();
                 this.grafico.refresh();
@@ -162,13 +160,7 @@ public class Entidade implements Serializable{
         this.especializacao = especializacao;
     }
     
-    public List<Relacionamento> getRelacionamentos() {
-        return relacionamentos;
-    }
-
-    public void setRelacionamentos(List<Relacionamento> relacionamentos) {
-        this.relacionamentos = relacionamentos;
-    }
+   
  
     public List<Atributo> getAtributos() {
         return atributos;

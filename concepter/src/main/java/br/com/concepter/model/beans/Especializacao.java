@@ -6,39 +6,43 @@
 
 package br.com.concepter.model.beans;
 
-import br.com.concepter.model.enuns.TipoEntidadeEnum;
-import br.com.concepter.model.enuns.TipoEspecializacaoEnum;
-import com.mxgraph.model.mxCell;
-import com.mxgraph.util.mxConstants;
-import com.mxgraph.view.mxGraph;
-import com.mxgraph.view.mxStylesheet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import javax.xml.bind.annotation.XmlRootElement;
+
 import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author AllanMagnum
- */
-@XmlRootElement
+import com.mxgraph.model.mxCell;
+import com.mxgraph.util.mxConstants;
+import com.mxgraph.view.mxGraph;
+import com.mxgraph.view.mxStylesheet;
+
+import br.com.concepter.model.enuns.TipoEntidadeEnum;
+import br.com.concepter.model.enuns.TipoEspecializacaoEnum;
+
+
 public class Especializacao {
     
     private Long id;
     private String nome;
-    private TipoEspecializacaoEnum tipoEspecializacao; 
+    private TipoEspecializacaoEnum tipoEspecializacao;
+    
+    @XmlTransient
     private List<Entidade> entidades = new ArrayList<Entidade>();
-
+    
+    @XmlTransient
     private HashMap<Integer, Especializacao> mapaGraficoEspecializacao = new HashMap<Integer, Especializacao>();
-
+    
+    @XmlTransient
     private mxGraph grafico;
+    @XmlTransient
+    private mxCell cell;
+    
     private double pX;
     private double pY;
     private int tamanhoLargura;
     private int tamanhoAltura;
-    private mxCell cell;
 
     public Especializacao() {
     }

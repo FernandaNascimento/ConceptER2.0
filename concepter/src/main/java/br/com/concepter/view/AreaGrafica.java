@@ -8,26 +8,32 @@ package br.com.concepter.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.TransferHandler;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.swing.handler.mxGraphTransferHandler;
+import com.mxgraph.util.mxRectangle;
 import com.mxgraph.view.mxGraph;
 
 import br.com.concepter.model.beans.Agregacao;
@@ -46,15 +52,18 @@ public class AreaGrafica extends JInternalFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+    private final static String DROPALLOWED_KEY = "DropAllowed";
+
+	
 	private static mxGraph grafico;
 	private static mxGraphComponent areaGrafico;
-	private Integer cont_entidade = 0;
+	private static Integer cont_entidade = 0;
 	private Integer cont_relacionamento = 0;
 	private Integer cont_atributo = new Integer(0);
 	
 	public static Integer maxEntAtr = 20;
 
-	private HashMap<Integer, Entidade> mapaGraficoEntidades = new HashMap<Integer, Entidade>();
+	private static HashMap<Integer, Entidade> mapaGraficoEntidades = new HashMap<Integer, Entidade>();
 	private HashMap<Integer, Atributo> mapaGraficoAtributos = new HashMap<Integer, Atributo>();
 	private HashMap<Integer, Relacionamento> mapaGraficoRelacionamentos = new HashMap<Integer, Relacionamento>();
 	private HashMap<Integer, Especializacao> mapaGraficoEspecializacao = new HashMap<Integer, Especializacao>();
@@ -83,16 +92,60 @@ public class AreaGrafica extends JInternalFrame {
 
 	public AreaGrafica(){
 		this.grafico = new mxGraph();
+		this.grafico.setMinimumGraphSize(new mxRectangle(83,0,500,200));
 
-		this.areaGrafico = new mxGraphComponent(grafico);
+		this.areaGrafico = new mxGraphComponent(grafico){
+
+            protected TransferHandler createTransferHandler()
+            {
+                return new mxGraphTransferHandler() {
+                	
+                    public boolean importData(JComponent c, Transferable t)
+                    {
+                        if( c instanceof mxGraphComponent) {
+                        	
+                        	
+                            Object obj = ((mxGraphComponent) c).getClientProperty(DROPALLOWED_KEY);
+                            boolean allowDrop = obj != null && ((Boolean) obj) == true;
+
+                            if( !allowDrop) {
+                                System.out.println( "Drop not allowed here!");
+                                return false;
+                            }
+
+                        }
+
+                        return super.importData(c, t);
+
+                    }
+
+                };
+            }
+
+        };
+        
 		this.areaGrafico.setPreferredSize(new Dimension(500,200));
 		this.areaGrafico.setLocation(83,0);
 		this.areaGrafico.getGraphControl().addMouseListener(new ObjetoMer_Selecionado());
 		this.areaGrafico.getGraphControl().addMouseListener(new ObjetoMer_RigthClick());
 		this.areaGrafico.getGraphControl().addMouseListener(new BotaoEsquerdoCliqueGrafico());
 		
-		//this.areaGrafico.putClientProperty("DropAllowed", Boolean.FALSE);
-		//this.areaGrafico.setBorder( BorderFactory.createLineBorder(Color.gray));
+		this.areaGrafico.putClientProperty("DropAllowed", Boolean.TRUE);
+		this.areaGrafico.setBorder( BorderFactory.createLineBorder(Color.red));
+		
+		/*this.areaGrafico.getGraphControl().addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				System.out.println("Moved X= "+ e.getX()+" Y= "+ e.getY());
+				
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				System.out.println("Dragged X= "+ e.getX()+" Y= "+ e.getY());				
+			}
+		});
 
 		this.areaGrafico.addKeyListener(new KeyAdapter() {
 			@Override
@@ -103,7 +156,7 @@ public class AreaGrafica extends JInternalFrame {
 				}
 
 			}
-		});
+		});*/
 
 
 		this.grafico.setEdgeLabelsMovable(false);   //Nao permite que a descricao da seta seja movida
@@ -115,6 +168,7 @@ public class AreaGrafica extends JInternalFrame {
 
 		this.grafico.setAllowDanglingEdges(false);
 		this.grafico.setAllowLoops(false);
+		this.grafico.setAllowNegativeCoordinates(false);
 
 		this.grafico.setCellsBendable(false);
 		this.grafico.setSplitEnabled(true);
@@ -170,7 +224,7 @@ public class AreaGrafica extends JInternalFrame {
 		return py;
 	}
 
-	public Integer getCont_entidade() {
+	public static Integer getCont_entidade() {
 		return cont_entidade;
 	}
 
@@ -214,7 +268,7 @@ public class AreaGrafica extends JInternalFrame {
 		this.mapaGraficoAgregacao = mapaGraficoAgregacao;
 	}
 
-	public HashMap<Integer, Entidade> getMapaGraficoEntidades() {
+	public static HashMap<Integer, Entidade> getMapaGraficoEntidades() {
 		return mapaGraficoEntidades;
 	}
 
@@ -312,36 +366,50 @@ public class AreaGrafica extends JInternalFrame {
 
 		if(relacionamentoSelecionado != null){
 			isRelacionamento = true;
+			mapaGraficoRelacionamentos.remove(Integer.parseInt( ( (mxCell) cell ).getId() ));
 		}
 
 		if(entidadeSelecionado != null){
 			isEntidade = true;
+			
 		}
 
 		if(agregacaoSelecionado != null){
 			isAgregacao = true;
+			mapaGraficoAgregacao.remove(Integer.parseInt( ( (mxCell) cell ).getId() ));
 		}
 
 		if(atributoSelecionado != null){
 			isAtributo = true;
+			mapaGraficoAtributos.remove(Integer.parseInt( ( (mxCell) cell ).getId() ));
 		}
 
 		if(especializacaoSelecionado != null){
 			isEspecializaco = true;
+			mapaGraficoEspecializacao.remove(Integer.parseInt( ( (mxCell) cell ).getId() ));
 		}
 		if(isEntidade && !entidadeSelecionado.getAtributos().isEmpty()) {
 			for (Atributo atributo : entidadeSelecionado.getAtributos()) {
+				if(!atributo.getTipoAtributo().equals(TipoAtributoEnum.SIMPLES)) {
+					for (Atributo atributo1 : atributo.getAtributos()) {
+						grafico.getModel().remove(atributo1.getForma());
+					}
+				}
 				grafico.getModel().remove(atributo.getForma());
 			}
 		} 
-		if (isEntidade && !entidadeSelecionado.getRelacionamentos().isEmpty()) {
+		/*if (isEntidade && !entidadeSelecionado.getRelacionamentos().isEmpty()) {
 			for (Relacionamento relacionamento : entidadeSelecionado.getRelacionamentos()) {
 				grafico.getModel().remove(relacionamento.getCell());
 			}
+		}*/
+		if(isEntidade) {
+			mapaGraficoEntidades.remove(Integer.parseInt( ( (mxCell) cell ).getId() ));
 		}
 
 		if(isRelacionamento || isAgregacao || isAtributo || isEntidade || isEspecializaco || isRelacionamento){
 			grafico.getModel().remove(cell);
+			
 		}
 	}
 
@@ -436,7 +504,7 @@ public class AreaGrafica extends JInternalFrame {
 				Especializacao especializacaoSelecionado = null;
 
 				limparMenuPopup();
-
+				
 				cell = areaGrafico.getCellAt(e.getX(), e.getY());
 
 				if(cell != null ){
@@ -503,9 +571,12 @@ public class AreaGrafica extends JInternalFrame {
 		public void mouseClicked(MouseEvent e){
 			cell = areaGrafico.getCellAt(e.getX(), e.getY());
 		}
+		
+		
 	}
 
 	public class BotaoEsquerdoCliqueGrafico extends MouseAdapter{
+				
 		@Override
 		public void mouseClicked(MouseEvent e){
 			boolean isRelacionamento = false;
@@ -525,6 +596,9 @@ public class AreaGrafica extends JInternalFrame {
 				if(px == 0 && py == 0){
 					px = e.getX();
 					py = e.getY();
+				}
+				if(e.getX()<=0 || e.getY()<=0) {
+					JOptionPane.showMessageDialog(null, "Você não pode colocar aqui!");
 				}
 
 				if(areaGrafico.getCellAt(e.getX(), e.getY()) != null){
@@ -593,8 +667,8 @@ public class AreaGrafica extends JInternalFrame {
 								mapaGraficoAtributos,
 								TelaPrincipal.getTipoAtributo(),
 								"Atributo",
-								px,
-								py,
+								((mxCell) cell).getGeometry().getX(),
+								((mxCell) cell).getGeometry().getY(),
 								cont_atributo);
 						atributo.setIsRelacionamento(isRelacionamento);
 
@@ -714,7 +788,7 @@ public class AreaGrafica extends JInternalFrame {
 
 					}
 				}
-
+				//relacionamento ternario
 				if(TelaPrincipal.getBotao() == 4){
 
 					if(entidade_2 != null && entidade_1 != null && isEntidade){
@@ -793,17 +867,17 @@ public class AreaGrafica extends JInternalFrame {
 					}
 				}
 
-				//botao relacionamento
+				//botao agregacao binaria
 				if(TelaPrincipal.getBotao() == 7){
 
-					if(relacionamento != null  && isEntidade){
+					/*if(entidade_1 == null  && isEntidade){
 						entidade_1 = entidadeSelecionado;
-					}
+					}*/
 					if(relacionamento == null && isRelacionamento){
 						relacionamento = relacionamentoSelecionado;
 					}
 
-					if (relacionamento != null && entidade_1 != null){
+					if (relacionamento != null ){
 
 						Agregacao agregacao = new Agregacao( grafico, 
 								mapaGraficoAgregacao,
@@ -821,7 +895,7 @@ public class AreaGrafica extends JInternalFrame {
 
 					}
 				} 
-
+				//Botao agregacao ternaria
 				if(TelaPrincipal.getBotao() == 8){
 					if(entidade_1 != null && relacionamento != null  && isEntidade){
 						entidade_2 = entidadeSelecionado;
@@ -853,7 +927,7 @@ public class AreaGrafica extends JInternalFrame {
 					}
 				}
 
-				//botao relacionamento
+				//botao agregacao quaternaria
 				if(TelaPrincipal.getBotao() == 9){
 					if(relacionamento != null && entidade_1 != null && entidade_2 != null  && isEntidade){
 						entidade_3 = entidadeSelecionado;

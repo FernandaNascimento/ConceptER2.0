@@ -1,7 +1,13 @@
 package br.com.concepter.model.beans;
 
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxICell;
 import com.mxgraph.view.mxGraph;
+
+import br.com.concepter.model.enuns.TipoEntidadeEnum;
+import br.com.concepter.view.AreaGrafica;
+import br.com.concepter.view.TelaPrincipal;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +18,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Agregacao {
     private Long id;
     private String nome;
+    @XmlTransient
     private List<Atributo> atributos = new ArrayList<>();
     private Relacionamento relacionamento;
     
@@ -39,48 +46,61 @@ public class Agregacao {
             this.grafico = grafico;
             this.mapaGraficoAgregacao= mapaGraficoAgregacao;
             this.mapaGraficoRelacionamentos= mapaGraficoRelacionamentos;
-            this.tamanhoLargura = 140;
-            this.tamanhoAltura = 90;
+            this.tamanhoLargura = 125;
+            this.tamanhoAltura = 70;
             this.pX = pX;
             this.pY = pY;
     }
         	
-    public void add(Object relacionamento_entidade, Object relacionamento_entidade_1){
+    public void add(Object relacionamento, Object entidade){
             this.grafico.getModel().beginUpdate();
             
             Object parent = this.grafico.getDefaultParent();
             
             double posx = 0;
             double posy = 0;
+            Object relacionamento2 = null;
+            Object mxcell = null;
             
             try{	
                 
-                if (relacionamento_entidade instanceof Relacionamento){
-                    posx =  ((Relacionamento)relacionamento_entidade).getCell().getGeometry().getX() -20;
-                    posy =  ((Relacionamento)relacionamento_entidade).getCell().getGeometry().getY() -20;
+                if (relacionamento instanceof Relacionamento){
+                    posx =  ((Relacionamento)relacionamento).getCell().getGeometry().getX() ;
+                    posy =  ((Relacionamento)relacionamento).getCell().getGeometry().getY() ;
                         
-                    relacionamento_entidade = this.grafico.insertVertex(parent, null, null, posx, posy, this.tamanhoLargura, tamanhoAltura, "verticalAlign=top;fillColor=none;shape=rectangle;");
+                    relacionamento2 = this.grafico.insertVertex(parent, null, null, posx, posy, this.tamanhoLargura, tamanhoAltura, "verticalAlign=top;fillColor=none;shape=rectangle;");
+                    
                 }else{
-                    ((mxCell)relacionamento_entidade).getGeometry().setRect(20, 20, 100, 50);
                 }
+                /*
+                if (entidade instanceof Relacionamento){
+                    posx =  ((Relacionamento)entidade).getCell().getGeometry().getX() -20;
+                    posy = ((Relacionamento)entidade).getCell().getGeometry().getY() -20;
+                        
+                    entidade = this.grafico.insertVertex(parent, null, null, posx, posy, this.tamanhoLargura, tamanhoAltura, "verticalAlign=top;fillColor=none;shape=rectangle;");
+                }else{
+                	//((Entidade)entidade).getCell().getGeometry().setRect(20, 20, 100, 50);
+                }
+                */
+
+                mxcell = this.grafico.addCell(((Relacionamento)relacionamento).getCell(), (mxCell)relacionamento2);
+                ((mxCell)relacionamento2).getGeometry().setRect(posx, posy, 125, 70);
+                ((mxCell)mxcell).setConnectable(false);
+                ((Relacionamento)relacionamento).getCell().getGeometry().setX(10);
+                ((Relacionamento)relacionamento).getCell().getGeometry().setY(10);
+                //((mxCell)mxcell).getGeometry().setX(posx);
+                //((mxCell)mxcell).getGeometry().setY(posy);
                 
-                if (relacionamento_entidade_1 instanceof Relacionamento){
-                    posx =  ((Relacionamento)relacionamento_entidade_1).getCell().getGeometry().getX() -20;
-                    posy = ((Relacionamento)relacionamento_entidade_1).getCell().getGeometry().getY() -20;
-                        
-                    relacionamento_entidade_1 = this.grafico.insertVertex(parent, null, null, posx, posy, this.tamanhoLargura, tamanhoAltura, "verticalAlign=top;fillColor=none;shape=rectangle;");
-                }else{
-                	((Entidade)relacionamento_entidade_1).getCell().getGeometry().setRect(20, 20, 100, 50);
-                }
+                //((Relacionamento)relacionamento).getCell().getGeometry().setRect(cell.getGeometry().getX(), cell.getGeometry().getY(), 100, 50);
+                
+                entidade = new Entidade( grafico, AreaGrafica.getMapaGraficoEntidades(), "Entidade" + AreaGrafica.getCont_entidade(), posx,posy+300, TipoEntidadeEnum.FORTE);
+               ((Entidade) entidade).add();
+                Relacionamento relacionamento_agregacao = new Relacionamento(grafico, mapaGraficoRelacionamentos, "Relacionamento", posx, posy);
 
-                this.grafico.addCell(((mxCell)relacionamento_entidade), ((Entidade)relacionamento_entidade_1).getCell());
-               
-                Relacionamento relacionamento_agregacao = new Relacionamento(grafico, mapaGraficoRelacionamentos, "Relacionamento", posx + 220, posy + 20);
-
-                relacionamento_agregacao.add(relacionamento_entidade,(Entidade) relacionamento_entidade_1);
+                relacionamento_agregacao.add(((mxCell)relacionamento2),(Entidade) entidade);
             }
             finally{
-                this.mapaGraficoAgregacao.put( Integer.valueOf( ((mxCell) relacionamento_entidade).getId() ), this );
+                //this.mapaGraficoAgregacao.put( Integer.valueOf(((mxCell) mxcell).getId()), mxcell );
                 
                 this.grafico.getModel().endUpdate();
                 this.grafico.refresh();

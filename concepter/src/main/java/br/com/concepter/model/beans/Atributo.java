@@ -1,54 +1,58 @@
 package br.com.concepter.model.beans;
 
-import br.com.concepter.model.enuns.TipoAtributoEnum;
-import com.mxgraph.model.mxCell;
-import com.mxgraph.util.mxConstants;
-
-import java.util.HashMap;
-import com.mxgraph.view.mxGraph;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+
 import javax.xml.bind.annotation.XmlTransient;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+import com.mxgraph.model.mxCell;
+import com.mxgraph.util.mxConstants;
+import com.mxgraph.view.mxGraph;
+
+import br.com.concepter.model.enuns.TipoAtributoEnum;
+
+
 public class Atributo {
 
     private Long id;
     private String nome;
     private TipoAtributoEnum tipoAtributo;
+    
     @XmlTransient
     private Entidade entidade;
+    
     @XmlTransient
     private Atributo atributo;
+    
+    @XmlTransient
     private Relacionamento relacionamento;
+    
     @XmlTransient
     private Agregacao agregacao;
-    @XmlElementWrapper
+    
+    @XmlTransient
     private List<Atributo> atributos = new ArrayList<>();
     
     @XmlTransient
     private mxGraph grafico; 
+    
     @XmlTransient
     private mxCell forma;
-    @XmlTransient
+    
     private double pX;
-    @XmlTransient
+    
     private double pY;
-    @XmlTransient
+    
     private int tamanhoLargura;
-    @XmlTransient
+    
     private int tamanhoAltura;
     
     @XmlTransient
     private HashMap<Integer, Atributo> mapaGraficoAtributos;
-    @XmlTransient
+    
     private Integer cont_Atributo;
-    @XmlTransient
+    
     private boolean isRelacionamento;
 
     public Atributo() {
@@ -58,8 +62,8 @@ public class Atributo {
             this.nome = nome + cont_Atributo;
             this.grafico = grafico;
             this.mapaGraficoAtributos = mapaGraficoAtributos;
-            this.pX = pX - 40;
-            this.pY = pY - 80;
+            this.pX = pX;
+            this.pY = pY;
             this.tamanhoLargura = 100;
             this.tamanhoAltura = 25;
             this.tipoAtributo = tipoAtributo;
@@ -95,24 +99,45 @@ public class Atributo {
             double posx = ((mxCell) objeto).getGeometry().getX();
             double posy = ((mxCell) objeto).getGeometry().getY();
 
-            if(this.isRelacionamento){
-                posx = posx;
-                posy = posy;
+            if(((posy-50)<=0) && (tipoAtributo == TipoAtributoEnum.SIMPLES)) {
+            	posy = posy+80;
+            } else if (((posy-130)<=0) && (tipoAtributo == TipoAtributoEnum.COMPOSTO)) {
+            	posy = posy+80;
+            }else {
+            	posy = posy-50;
             }
             
-            atributo = this.grafico.insertVertex(parent, null, this.nome, posx, posy - 50, this.tamanhoLargura, this.tamanhoAltura, caracteristicas);
+            
+            atributo = this.grafico.insertVertex(parent, null, this.nome, posx, posy, this.tamanhoLargura, this.tamanhoAltura, caracteristicas);
             
             this.grafico.insertEdge(parent, null, null, atributo, objeto,"startArrow=none;endArrow=none;");
 
             if(tipoAtributo == TipoAtributoEnum.COMPOSTO){
                 this.cont_Atributo++;
-                atributo_1 = this.grafico.insertVertex(parent, null, "Atributo" + this.cont_Atributo, this.pX - 55, this.pY - 50, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=ellipse;rounded=true;");
+                double px1,px2,py;
+                px2 = this.pX + 15;
+                if((this.pX - 95)<=0) {
+                	px1 = px2 + 110;
+                } else {
+                	px1 = this.pX - 95;
+                }
+                /*if((this.pX + 15)<=0) {
+                	px2 = this.pX + 15;
+                } else {
+                	px2 = this.pX + 15;
+                }*/
+                if((this.pY-130)<=0) {
+                	py = posy + 50;
+                } else {
+                	py = this.pY-130;
+                }
+                atributo_1 = this.grafico.insertVertex(parent, null, "Atributo" + this.cont_Atributo, px1, py, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=ellipse;rounded=true;");
                 Atributo atr_1 = new Atributo(this.grafico, this.mapaGraficoAtributos, TipoAtributoEnum.SIMPLES, "Atributo" + this.cont_Atributo, this.pX, this.pY, cont_Atributo);
                 atr_1.setForma((mxCell) atributo_1);
                 this.mapaGraficoAtributos.put( Integer.valueOf( ((mxCell) atributo_1).getId() ), atr_1 );
                 
                 this.cont_Atributo++;
-                atributo_2 = this.grafico.insertVertex(parent, null, "Atributo" + this.cont_Atributo, this.pX + 55, this.pY - 50, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=ellipse;rounded=true;");
+                atributo_2 = this.grafico.insertVertex(parent, null, "Atributo" + this.cont_Atributo, px2, py, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=ellipse;rounded=true;");
                 Atributo atr_2 = new Atributo(this.grafico, this.mapaGraficoAtributos, TipoAtributoEnum.SIMPLES, "Atributo" + this.cont_Atributo, this.pX, this.pY, cont_Atributo);
                 atr_2.setForma((mxCell) atributo_2);
                 this.mapaGraficoAtributos.put( Integer.valueOf( ((mxCell) atributo_2).getId() ), atr_2 );
@@ -164,6 +189,7 @@ public class Atributo {
     public void setTipoAtributo(TipoAtributoEnum tipoAtributo) {
         this.tipoAtributo = tipoAtributo;
     }
+    @XmlTransient
     public Entidade getEntidade() {
         return entidade;
     }
@@ -189,18 +215,21 @@ public class Atributo {
     public void setAgregacao(Agregacao agregacao) {
         this.agregacao = agregacao;
     }
+    @XmlTransient
     public List<Atributo> getAtributos() {
         return atributos;
     }
     public void setAtributos(List<Atributo> atributos) {
         this.atributos = atributos;
     }
+    @XmlTransient
     public mxGraph getGrafico() {
         return grafico;
     }
     public void setGrafico(mxGraph grafico) {
         this.grafico = grafico;
     }
+    @XmlTransient
     public mxCell getForma() {
         return forma;
     }
@@ -231,6 +260,7 @@ public class Atributo {
     public void setTamanhoAltura(int tamanhoAltura) {
         this.tamanhoAltura = tamanhoAltura;
     }
+    @XmlTransient
     public HashMap<Integer, Atributo> getMapaGraficoAtributos() {
         return mapaGraficoAtributos;
     }

@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -29,7 +28,7 @@ public class Relacionamento implements Serializable{
 	private Integer id;
     private String nome;
     private List<Atributo> atributos = new ArrayList<>();
-    @XmlTransient
+    
     private HashMap<Entidade, Relacao> entidades = new HashMap<Entidade, Relacao>();
     
     private Agregacao agregacao = null;
@@ -75,14 +74,12 @@ public class Relacionamento implements Serializable{
                     
             this.entidades.put(entidade_2, new Relacao("N", TipoObrigatoriedadeEnum.PARCIAL));
                     
-            ((Entidade)entidade_agregacao).getRelacionamentos().add(this);
                     
             //this.entidades.clear();
                     
-            this.entidades.put((Entidade)entidade_agregacao, new Relacao("N", TipoObrigatoriedadeEnum.PARCIAL));
             
             try{	
-                Object[] cells = this.grafico.getChildVertices(parent);
+                //Object[] cells = this.grafico.getChildVertices(parent);
                 
 //                for (Object cell : cells) {
 //                    if( ((mxCell)cell).getId() ){
@@ -91,20 +88,22 @@ public class Relacionamento implements Serializable{
 //                }
                 
                 if("br.com.concepter.model.beans.Entidade".equals(entidade_agregacao.getClass().getName())){
-                    posx = ((Entidade)entidade_agregacao).getCell().getGeometry().getX();
+                	this.entidades.put((Entidade)entidade_agregacao, new Relacao("N", TipoObrigatoriedadeEnum.PARCIAL));
+                	//((Entidade)entidade_agregacao).getRelacionamentos().add(this);
+                    posx = ((Entidade)entidade_agregacao).getCell().getGeometry().getX()+160;
                     posy = ((Entidade)entidade_agregacao).getCell().getGeometry().getY();
                     
                     entidade_agregacao = ((Entidade)entidade_agregacao).getCell();      
                 }else{
-                    posx = ((Agregacao)entidade_agregacao).getCell().getGeometry().getX();
-                    posy = ((Agregacao)entidade_agregacao).getCell().getGeometry().getY();
+                    posx = ((mxCell)entidade_agregacao).getGeometry().getX();
+                    posy = ((mxCell)entidade_agregacao).getGeometry().getY()+200;
                    
-                    this.agregacao = (Agregacao)entidade_agregacao;
+                    //this.agregacao = (Relacionamento)entidade_agregacao;
                     
-                    entidade_agregacao = ((Agregacao)entidade_agregacao).getCell();
+                    entidade_agregacao = ((mxCell)entidade_agregacao);
                 }
 
-                relacionamento =  this.grafico.insertVertex(parent, null, this.nome, posx + 160, posy, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=rhombus;");
+                relacionamento =  this.grafico.insertVertex(parent, null, this.nome, posx , posy, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=rhombus;");
                                 
                 mxCell e1 = (mxCell) this.grafico.insertEdge(parent, null, "N", entidade_agregacao, relacionamento,"startArrow=none;endArrow=none;fontSize=15;fontStyle=1;dashed=1;");
                 mxCell e2 = (mxCell)this.grafico.insertEdge(parent, null, "M", entidade_2.getCell(), relacionamento,"startArrow=none;endArrow=none;fontSize=15;fontStyle=1;dashed=1;");
@@ -132,7 +131,7 @@ public class Relacionamento implements Serializable{
                 
                 this.id = Integer.parseInt(((mxCell)relacionamento).getId());
                 
-                entidade_2.getRelacionamentos().add(this);
+                //entidade_2.getRelacionamentos().add(this);
                 
                 this.mapaGraficoRelacionamentos.put( Integer.valueOf( ((mxCell) relacionamento).getId() ), this);
 
