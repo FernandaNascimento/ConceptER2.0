@@ -2,7 +2,6 @@ package br.com.concepter.model.beans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlTransient;
@@ -11,6 +10,7 @@ import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
 
 import br.com.concepter.model.enuns.TipoEntidadeEnum;
+import br.com.concepter.view.AreaGrafica;
 
 
 public class Entidade implements Serializable{
@@ -24,7 +24,7 @@ public class Entidade implements Serializable{
     private String nome;
     private TipoEntidadeEnum tipo;
     
-    private Especializacao especializacao;
+    //private Especializacao especializacao;
     
     
     private List<Atributo> atributos = new ArrayList<>();
@@ -43,17 +43,15 @@ public class Entidade implements Serializable{
     
     private int tamanhoAltura;
     
-    @XmlTransient
-    private HashMap<Integer, Entidade> mapaGraficoEntidade;
+    private boolean hasRelacionamento;
 
     public Entidade() {
     }
     
-    public Entidade(mxGraph grafico, HashMap<Integer, Entidade> mapaGraficoEntidade, String nome, double pX, double pY, TipoEntidadeEnum tipo){
+    public Entidade(mxGraph grafico,  String nome, double pX, double pY, TipoEntidadeEnum tipo){
             this.nome = nome;
             this.tipo = tipo;
             this.grafico = grafico;
-            this.mapaGraficoEntidade = mapaGraficoEntidade;
             this.tamanhoLargura = 100;
             this.tamanhoAltura = 50;
             this.pX = pX;
@@ -86,7 +84,7 @@ public class Entidade implements Serializable{
                 this.id = Integer.parseInt(((mxCell) entidade).getId());
                 this.cell = (mxCell)entidade;
                 
-                this.mapaGraficoEntidade.put( Integer.valueOf( ((mxCell) entidade).getId() ), this);
+                AreaGrafica.getMapaGraficoEntidades().put( Integer.valueOf( ((mxCell) entidade).getId() ), this);
                 this.grafico.getModel().endUpdate();
                 this.grafico.refresh();
             }
@@ -117,12 +115,12 @@ public class Entidade implements Serializable{
                                                             this.tamanhoAltura, 
                                                             caracteristicas);
 
-                this.grafico.insertEdge(parent, null, "U", especializacao.getCell(), this.cell, "startArrow=none;endArrow=none;strokeColor=red;");
+                this.grafico.insertEdge(parent, null, "U", especializacao.getCell(), this.cell, "startArrow=none;endArrow=none;");
             }
             finally{
-                    this.especializacao = especializacao;
+                    //this.especializacao = especializacao;
                     especializacao.getEntidades().add(this);
-                    this.mapaGraficoEntidade.put( Integer.valueOf( cell.getId() ), this);
+                    AreaGrafica.getMapaGraficoEntidades().put( Integer.valueOf( cell.getId() ), this);
                     this.grafico.getModel().endUpdate();
                     this.grafico.refresh();
             }
@@ -152,13 +150,13 @@ public class Entidade implements Serializable{
         this.tipo = tipo;
     }
    
-    public Especializacao getEspecializacao() {
+   /* public Especializacao getEspecializacao() {
         return especializacao;
     }
 
     public void setEspecializacao(Especializacao especializacao) {
         this.especializacao = especializacao;
-    }
+    }*/
     
    
  
@@ -217,14 +215,13 @@ public class Entidade implements Serializable{
     public void setTamanhoAltura(int tamanhoAltura) {
         this.tamanhoAltura = tamanhoAltura;
     }
-    
-    public HashMap<Integer, Entidade> getMapaGraficoEntidade() {
-        return mapaGraficoEntidade;
-    }
-    
-    @XmlTransient
-    public void setMapaGraficoEntidade(HashMap<Integer, Entidade> mapaGraficoEntidade) {
-        this.mapaGraficoEntidade = mapaGraficoEntidade;
-    }
-      
+
+	public boolean hasRelacionamento() {
+		return hasRelacionamento;
+	}
+
+	public void setHasRelacionamento(boolean hasRelacionamento) {
+		this.hasRelacionamento = hasRelacionamento;
+	}
+   
 }

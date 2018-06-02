@@ -43,15 +43,15 @@ public class SavedObject implements Serializable, CycleRecoverable{
 	}
 	
     public SavedObject(AreaGrafica areaGrafica) {
-		this.cont_atributo = areaGrafica.getCont_atributo();
+		this.cont_atributo = AreaGrafica.getCont_atributo();
 		this.cont_relacionamento = areaGrafica.getCont_relacionamento();
-		this.cont_entidade = areaGrafica.getCont_entidade();
+		this.cont_entidade = AreaGrafica.getCont_entidade();
 		
-		this.mapaGraficoEntidades = areaGrafica.getMapaGraficoEntidades();
-		this.mapaGraficoAtributos = areaGrafica.getMapaGraficoAtributos();
-		this.mapaGraficoRelacionamentos = areaGrafica.getMapaGraficoRelacionamentos();
-		this.mapaGraficoEspecializacao = areaGrafica.getMapaGraficoEspecializacao();
-		this.mapaGraficoAgregacao = areaGrafica.getMapaGraficoAgregacao();
+		this.mapaGraficoEntidades = AreaGrafica.getMapaGraficoEntidades();
+		this.mapaGraficoAtributos = AreaGrafica.getMapaGraficoAtributos();
+		this.mapaGraficoRelacionamentos = AreaGrafica.getMapaGraficoRelacionamentos();
+		this.mapaGraficoEspecializacao = AreaGrafica.getMapaGraficoEspecializacao();
+		this.mapaGraficoAgregacao = AreaGrafica.getMapaGraficoAgregacao();
 	}
 
     public Integer getCont_entidade() {

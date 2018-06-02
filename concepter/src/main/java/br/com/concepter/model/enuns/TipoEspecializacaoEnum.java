@@ -6,10 +6,25 @@
 
 package br.com.concepter.model.enuns;
 
-/**
- *
- * @author AllanMagnum
- */
+
 public enum TipoEspecializacaoEnum {
-    CONTEM, DISJUNCAO, SOBREPOSICAO;
+    ESPECIALIZACAO(""), DISJUNCAO("Disjunção"), SOBREPOSICAO("Sobreposição");
+	
+	private String name;
+
+	private TipoEspecializacaoEnum(String name) {
+		this.name = name;
+	}
+	
+    public String toString(){
+        return name;
+    }
+
+    public static String getEnumByString(String code){
+        for(TipoEspecializacaoEnum e : TipoEspecializacaoEnum.values()){
+            if(code == e.name) return e.name();
+        }
+        return null;
+    }
+
 }

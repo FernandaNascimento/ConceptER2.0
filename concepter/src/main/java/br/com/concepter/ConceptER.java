@@ -6,8 +6,9 @@
 
 package br.com.concepter;
 
-import br.com.concepter.view.TelaPrincipal;
 import javax.swing.JFrame;
+
+import br.com.concepter.view.TelaPrincipal;
 
 
 public class ConceptER {

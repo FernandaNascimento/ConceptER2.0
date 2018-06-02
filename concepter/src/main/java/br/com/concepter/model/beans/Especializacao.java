@@ -7,7 +7,6 @@
 package br.com.concepter.model.beans;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -20,6 +19,8 @@ import com.mxgraph.view.mxStylesheet;
 
 import br.com.concepter.model.enuns.TipoEntidadeEnum;
 import br.com.concepter.model.enuns.TipoEspecializacaoEnum;
+import br.com.concepter.model.enuns.TipoObrigatoriedadeEnum;
+import br.com.concepter.view.AreaGrafica;
 
 
 public class Especializacao {
@@ -27,12 +28,11 @@ public class Especializacao {
     private Long id;
     private String nome;
     private TipoEspecializacaoEnum tipoEspecializacao;
+    private TipoObrigatoriedadeEnum tipoObrigatoriedade;
     
-    @XmlTransient
     private List<Entidade> entidades = new ArrayList<Entidade>();
     
-    @XmlTransient
-    private HashMap<Integer, Especializacao> mapaGraficoEspecializacao = new HashMap<Integer, Especializacao>();
+    private Entidade entidadePrincipal;
     
     @XmlTransient
     private mxGraph grafico;
@@ -47,9 +47,8 @@ public class Especializacao {
     public Especializacao() {
     }
     
-    public Especializacao(mxGraph grafico, HashMap<Integer, Especializacao> mapaGraficoEspecializacao, double pX, double pY, TipoEspecializacaoEnum tipoEspecializacao){
+    public Especializacao(mxGraph grafico,  double pX, double pY, TipoEspecializacaoEnum tipoEspecializacao){
             this.grafico = grafico;
-            this.mapaGraficoEspecializacao = mapaGraficoEspecializacao;
             this.tamanhoLargura = 20;
             this.tamanhoAltura = 20;
             this.pX = pX;
@@ -57,11 +56,11 @@ public class Especializacao {
             this.tipoEspecializacao = tipoEspecializacao;
     }
 
-    public void add(Entidade entidade, HashMap<Integer, Entidade> mapaGraficoEntidades, Integer contEntidade){
+    public void add(Entidade entidade){
         this.grafico.getModel().beginUpdate();
         Object parent = this.grafico.getDefaultParent();
         
-        if(tipoEspecializacao == TipoEspecializacaoEnum.CONTEM){
+        if(tipoEspecializacao == TipoEspecializacaoEnum.ESPECIALIZACAO){
             nome = "c";
         }
         
@@ -76,14 +75,14 @@ public class Especializacao {
         Double posy = entidade.getCell().getGeometry().getY();
 
         try{	
-            
-            Entidade entidade_1 = new Entidade(this.grafico, mapaGraficoEntidades, "Entidade" + contEntidade, posx - 125, posy + 170, TipoEntidadeEnum.FORTE);
+            Entidade entidade_1 = new Entidade(this.grafico,  "Entidade" + AreaGrafica.getCont_entidade(), posx - 125, posy + 170, TipoEntidadeEnum.FORTE);
             entidade_1.add();
             this.entidades.add(entidade_1);
             
-            if(tipoEspecializacao != TipoEspecializacaoEnum.CONTEM){
+            if(tipoEspecializacao != TipoEspecializacaoEnum.ESPECIALIZACAO){
+            	AreaGrafica.setCont_entidade();
             	this.cell = (mxCell) this.grafico.insertVertex(parent, null, this.nome, posx+40, posy+100, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=ellipse;");
-                Entidade entidade_2 = new Entidade(this.grafico, mapaGraficoEntidades, "Entidade" + ++contEntidade, posx + 125, posy + 170, TipoEntidadeEnum.FORTE);
+                Entidade entidade_2 = new Entidade(this.grafico, "Entidade" + AreaGrafica.getCont_entidade(), posx + 125, posy + 170, TipoEntidadeEnum.FORTE);
                 entidade_2.add();
                 this.entidades.add(entidade_2);
                 this.grafico.insertEdge(parent, null, "U", entidade_2.getCell(), this.cell,"startArrow=none;endArrow=none;");
@@ -91,8 +90,9 @@ public class Especializacao {
             } else {
             	this.cell = entidade.getCell();            	
             }
-                       
-            entidade.setEspecializacao(this);
+            this.entidadePrincipal = entidade;
+            this.tipoObrigatoriedade = TipoObrigatoriedadeEnum.PARCIAL;
+            this.entidades.add(entidade);
                         
             mxStylesheet stylesheet = this.grafico.getStylesheet();
             
@@ -107,10 +107,10 @@ public class Especializacao {
             stylesheet.putCellStyle( myStyleName, style);
             
             this.grafico.insertEdge(parent, null, "U", entidade_1.getCell(), this.cell,"startArrow=none;endArrow=none;");
-        }
-
-        finally{
-            this.mapaGraficoEspecializacao.put( Integer.valueOf( this.cell.getId() ), this);
+        } catch(Exception e) {
+        	e.printStackTrace();
+        } finally{
+        	AreaGrafica.getMapaGraficoEspecializacao().put( Integer.valueOf( this.cell.getId() ), this);
             this.grafico.getModel().endUpdate();
             this.grafico.refresh();
         }
@@ -148,13 +148,6 @@ public class Especializacao {
         this.entidades = entidades;
     }
 
-    public HashMap<Integer, Especializacao> getMapaGraficoEspecializacao() {
-        return mapaGraficoEspecializacao;
-    }
-
-    public void setMapaGraficoEspecializacao(HashMap<Integer, Especializacao> mapaGraficoEspecializacao) {
-        this.mapaGraficoEspecializacao = mapaGraficoEspecializacao;
-    }
     @XmlTransient
     public mxGraph getGrafico() {
         return grafico;
@@ -203,6 +196,22 @@ public class Especializacao {
     public void setCell(mxCell cell) {
         this.cell = cell;
     }
+
+	public Entidade getEntidadePrincipal() {
+		return entidadePrincipal;
+	}
+
+	public void setEntidadePrincipal(Entidade entidadePrincipal) {
+		this.entidadePrincipal = entidadePrincipal;
+	}
+
+	public TipoObrigatoriedadeEnum getTipoObrigatoriedade() {
+		return tipoObrigatoriedade;
+	}
+
+	public void setTipoObrigatoriedade(TipoObrigatoriedadeEnum tipoObrigatoriedade) {
+		this.tipoObrigatoriedade = tipoObrigatoriedade;
+	}
         
         
 }

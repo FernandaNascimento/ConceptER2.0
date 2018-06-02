@@ -15,6 +15,7 @@ import com.mxgraph.util.mxPoint;
 import com.mxgraph.view.mxGraph;
 
 import br.com.concepter.model.enuns.TipoObrigatoriedadeEnum;
+import br.com.concepter.view.AreaGrafica;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -27,11 +28,9 @@ public class Relacionamento implements Serializable{
 	
 	private Integer id;
     private String nome;
-    private List<Atributo> atributos = new ArrayList<>();
-    
+    private List<Atributo> atributos = new ArrayList<>();   
     private HashMap<Entidade, Relacao> entidades = new HashMap<Entidade, Relacao>();
-    
-    private Agregacao agregacao = null;
+    boolean hasAgregacao;
     
     @XmlTransient
     private mxGraph grafico;
@@ -45,18 +44,15 @@ public class Relacionamento implements Serializable{
     private int tamanhoLargura;
     
     private int tamanhoAltura;
-    
-    @XmlTransient
-    private HashMap<Integer, Relacionamento> mapaGraficoRelacionamentos;
+
     
 
     public Relacionamento() {
     }
 
-    public Relacionamento(mxGraph grafico, HashMap<Integer, Relacionamento> mapaGraficoRelacionamentos, String nome, double pX, double pY){
+    public Relacionamento(mxGraph grafico,  String nome, double pX, double pY){
             this.nome = nome;
             this.grafico = grafico;
-            this.mapaGraficoRelacionamentos= mapaGraficoRelacionamentos;
             this.tamanhoLargura = 100;
             this.tamanhoAltura = 50;
             this.pX = pX;
@@ -73,47 +69,31 @@ public class Relacionamento implements Serializable{
             this.entidades.clear();
                     
             this.entidades.put(entidade_2, new Relacao("N", TipoObrigatoriedadeEnum.PARCIAL));
-                    
-                    
-            //this.entidades.clear();
-                    
-            
+            entidade_2.setHasRelacionamento(true);
+         
             try{	
-                //Object[] cells = this.grafico.getChildVertices(parent);
-                
-//                for (Object cell : cells) {
-//                    if( ((mxCell)cell).getId() ){
-//                        System.out.println("ok");
-//                    } 
-//                }
                 
                 if("br.com.concepter.model.beans.Entidade".equals(entidade_agregacao.getClass().getName())){
                 	this.entidades.put((Entidade)entidade_agregacao, new Relacao("N", TipoObrigatoriedadeEnum.PARCIAL));
-                	//((Entidade)entidade_agregacao).getRelacionamentos().add(this);
-                    posx = ((Entidade)entidade_agregacao).getCell().getGeometry().getX()+160;
+                	((Entidade) entidade_agregacao).setHasRelacionamento(true);
+
+                	posx = ((Entidade)entidade_agregacao).getCell().getGeometry().getX()+160;
                     posy = ((Entidade)entidade_agregacao).getCell().getGeometry().getY();
                     
                     entidade_agregacao = ((Entidade)entidade_agregacao).getCell();      
                 }else{
-                    posx = ((mxCell)entidade_agregacao).getGeometry().getX();
-                    posy = ((mxCell)entidade_agregacao).getGeometry().getY()+200;
-                   
-                    //this.agregacao = (Relacionamento)entidade_agregacao;
+                    posx = ((Agregacao)entidade_agregacao).getCell().getGeometry().getX();
+                    posy = ((Agregacao)entidade_agregacao).getCell().getGeometry().getY()+200;
                     
-                    entidade_agregacao = ((mxCell)entidade_agregacao);
+                    //this.setAgregacao((Agregacao) entidade_agregacao);   
+                    this.setHasAgregacao(true);
+                    entidade_agregacao = (mxCell)((Agregacao)entidade_agregacao).getCell();
                 }
 
                 relacionamento =  this.grafico.insertVertex(parent, null, this.nome, posx , posy, this.tamanhoLargura, this.tamanhoAltura, "fillColor=white;shape=rhombus;");
                                 
-                mxCell e1 = (mxCell) this.grafico.insertEdge(parent, null, "N", entidade_agregacao, relacionamento,"startArrow=none;endArrow=none;fontSize=15;fontStyle=1;dashed=1;");
+                 this.grafico.insertEdge(parent, null, "N", entidade_agregacao, relacionamento,"startArrow=none;endArrow=none;fontSize=15;fontStyle=1;dashed=1;");
                 mxCell e2 = (mxCell)this.grafico.insertEdge(parent, null, "M", entidade_2.getCell(), relacionamento,"startArrow=none;endArrow=none;fontSize=15;fontStyle=1;dashed=1;");
-
-                //mxPoint mx = new mxPoint();
-                //mx.setX(((mxCell)relacionamento).getGeometry().getX()+((mxCell)relacionamento).getGeometry().getWidth()/2+20);
-                //mx.setY(((mxCell)entidade_agregacao).getGeometry().getY()+((mxCell)entidade_agregacao).getGeometry().getHeight()*4/5);
-                //List<mxPoint> list = new ArrayList<mxPoint>();
-                //list.add(mx);
-                //e1.getGeometry().setPoints(list);
                 
                 if(entidade_agregacao == entidade_2.getCell()) {
                 	mxPoint mx2 = new mxPoint();
@@ -130,10 +110,8 @@ public class Relacionamento implements Serializable{
                 this.cell = (mxCell)relacionamento;
                 
                 this.id = Integer.parseInt(((mxCell)relacionamento).getId());
-                
-                //entidade_2.getRelacionamentos().add(this);
-                
-                this.mapaGraficoRelacionamentos.put( Integer.valueOf( ((mxCell) relacionamento).getId() ), this);
+               
+                AreaGrafica.getMapaGraficoRelacionamentos().put( Integer.valueOf( ((mxCell) relacionamento).getId() ), this);
 
                 this.grafico.getModel().endUpdate();
                 this.grafico.refresh();
@@ -159,8 +137,8 @@ public class Relacionamento implements Serializable{
                     posx = ((Agregacao)entidade_agregacao).getCell().getGeometry().getX();
                     posy = ((Agregacao)entidade_agregacao).getCell().getGeometry().getY();
                    
-                    this.agregacao = (Agregacao)entidade_agregacao;
-                    
+                    //this.agregacao = (Agregacao)entidade_agregacao;
+                    this.setHasAgregacao(true);
                     entidade_agregacao = ((Agregacao)entidade_agregacao).getCell();
                 }
 
@@ -176,10 +154,14 @@ public class Relacionamento implements Serializable{
                 this.entidades.put(entidade_3, new Relacao("M", TipoObrigatoriedadeEnum.PARCIAL));
                 
                 this.cell = (mxCell)relacionamento;
-                
+                entidade_2.setHasRelacionamento(true);
+                entidade_3.setHasRelacionamento(true);
+                if(entidade_agregacao instanceof Entidade) {
+                	((Entidade) entidade_agregacao).setHasRelacionamento(true);
+                }
                 this.id = Integer.parseInt(((mxCell)relacionamento).getId());
 
-                this.mapaGraficoRelacionamentos.put( Integer.valueOf( ((mxCell) relacionamento).getId() ), this);
+                AreaGrafica.getMapaGraficoRelacionamentos().put( Integer.valueOf( ((mxCell) relacionamento).getId() ), this);
 
                 this.grafico.getModel().endUpdate();
                 this.grafico.refresh();
@@ -205,8 +187,8 @@ public class Relacionamento implements Serializable{
                     posx = ((Agregacao)entidade_agregacao).getCell().getGeometry().getX();
                     posy = ((Agregacao)entidade_agregacao).getCell().getGeometry().getY();
                    
-                    this.agregacao = (Agregacao)entidade_agregacao;
-                    
+                    //this.agregacao = (Agregacao)entidade_agregacao;
+                    this.setHasAgregacao(true);
                     entidade_agregacao = ((Agregacao)entidade_agregacao).getCell();
                 }
 
@@ -223,10 +205,15 @@ public class Relacionamento implements Serializable{
                 this.entidades.put(entidade_4, new Relacao("N", TipoObrigatoriedadeEnum.PARCIAL));
                 
                 this.cell = (mxCell)relacionamento;
-               
+                entidade_2.setHasRelacionamento(true);
+                entidade_3.setHasRelacionamento(true);
+                entidade_4.setHasRelacionamento(true);
+                if(entidade_agregacao instanceof Entidade) {
+                	((Entidade) entidade_agregacao).setHasRelacionamento(true);
+                }
                 this.id = Integer.parseInt(((mxCell)relacionamento).getId());
                 
-                this.mapaGraficoRelacionamentos.put( Integer.valueOf( ((mxCell) relacionamento).getId() ), this);
+                AreaGrafica.getMapaGraficoRelacionamentos().put( Integer.valueOf( ((mxCell) relacionamento).getId() ), this);
 
                 this.grafico.getModel().endUpdate();
                 this.grafico.refresh();
@@ -265,19 +252,20 @@ public class Relacionamento implements Serializable{
         this.entidades = entidades;
     }
 
-    public Agregacao getAgregacao() {
-        return agregacao;
-    }
-
-    public void setAgregacao(Agregacao agregacao) {
-        this.agregacao = agregacao;
-    }
     
     public mxGraph getGrafico() {
         return grafico;
     }
 
-    public void setGrafico(mxGraph grafico) {
+    public boolean isHasAgregacao() {
+		return hasAgregacao;
+	}
+
+	public void setHasAgregacao(boolean hasAgregacao) {
+		this.hasAgregacao = hasAgregacao;
+	}
+
+	public void setGrafico(mxGraph grafico) {
         this.grafico = grafico;
     }
  
@@ -320,17 +308,6 @@ public class Relacionamento implements Serializable{
     public void setTamanhoAltura(int tamanhoAltura) {
         this.tamanhoAltura = tamanhoAltura;
     }
- 
-    public HashMap getMapaGraficoRelacionamentos() {
-        return mapaGraficoRelacionamentos;
-    }
-
-    public void setMapaGraficoRelacionamentos(HashMap mapaGraficoRelacionamentos) {
-        this.mapaGraficoRelacionamentos = mapaGraficoRelacionamentos;
-    }
-
- 
-
-    
+     
     
 }

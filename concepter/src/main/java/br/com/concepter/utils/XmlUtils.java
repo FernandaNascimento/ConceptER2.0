@@ -8,8 +8,6 @@ package br.com.concepter.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Collection;
-import java.util.Iterator;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -18,7 +16,6 @@ import javax.xml.bind.Unmarshaller;
 
 import com.mxgraph.model.mxCell;
 
-import br.com.concepter.model.beans.Entidade;
 import br.com.concepter.model.beans.SavedObject;
 import br.com.concepter.view.AreaGrafica;
 
@@ -45,14 +42,14 @@ public class XmlUtils {
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             SavedObject savedObject = (SavedObject)jaxbUnmarshaller.unmarshal(file);
-            areaGrafica.setCont_atributo(savedObject.getCont_atributo());
-            areaGrafica.setCont_entidade(savedObject.getCont_entidade());
-            areaGrafica.setCont_relacionamento(savedObject.getCont_relacionamento());
-            areaGrafica.setMapaGraficoAgregacao(savedObject.getMapaGraficoAgregacao());
-            areaGrafica.setMapaGraficoAtributos(savedObject.getMapaGraficoAtributos());
-            areaGrafica.setMapaGraficoEntidades(savedObject.getMapaGraficoEntidades());
-            areaGrafica.setMapaGraficoEspecializacao(savedObject.getMapaGraficoEspecializacao());
-            areaGrafica.setMapaGraficoRelacionamentos(savedObject.getMapaGraficoRelacionamentos());
+            AreaGrafica.setCont_atributo(savedObject.getCont_atributo());
+            AreaGrafica.setCont_entidade(savedObject.getCont_entidade());
+            AreaGrafica.setCont_relacionamento(savedObject.getCont_relacionamento());
+            AreaGrafica.setMapaGraficoAgregacao(savedObject.getMapaGraficoAgregacao());
+            AreaGrafica.setMapaGraficoAtributos(savedObject.getMapaGraficoAtributos());
+            AreaGrafica.setMapaGraficoEntidades(savedObject.getMapaGraficoEntidades());
+            AreaGrafica.setMapaGraficoEspecializacao(savedObject.getMapaGraficoEspecializacao());
+            AreaGrafica.setMapaGraficoRelacionamentos(savedObject.getMapaGraficoRelacionamentos());
             FileUtils.loadGraph(areaGrafica.getAreaGrafico(), savedObject.getGraph());
             
             
@@ -61,15 +58,18 @@ public class XmlUtils {
             Object[] cells = areaGrafica.getAreaGrafico().getGraph().getSelectionCells();
             for (Object object : cells) {
                 mxCell cell = (mxCell) object;
-                if (areaGrafica.getMapaGraficoEntidades().containsKey(Integer.valueOf(cell.getId()))) {
-                	areaGrafica.getMapaGraficoEntidades().get(Integer.valueOf(cell.getId())).setCell(cell);
-                	areaGrafica.getMapaGraficoEntidades().get(Integer.valueOf(cell.getId())).setGrafico(areaGrafica.getAreaGrafico().getGraph());
-                } else if(areaGrafica.getMapaGraficoAtributos().containsKey(Integer.valueOf(cell.getId()))) {
-                	//areaGrafica.getMapaGraficoAtributos().get(Integer.valueOf(cell.getId())).setCell(cell);
-                } else if (areaGrafica.getMapaGraficoRelacionamentos().containsKey(Integer.valueOf(cell.getId()))) {
-                	areaGrafica.getMapaGraficoRelacionamentos().get(Integer.valueOf(cell.getId())).setCell(cell);
-                	areaGrafica.getMapaGraficoRelacionamentos().get(Integer.valueOf(cell.getId())).setGrafico(areaGrafica.getAreaGrafico().getGraph());
-                	
+                if (AreaGrafica.getMapaGraficoEntidades().containsKey(Integer.valueOf(cell.getId()))) {
+                	AreaGrafica.getMapaGraficoEntidades().get(Integer.valueOf(cell.getId())).setCell(cell);
+                	AreaGrafica.getMapaGraficoEntidades().get(Integer.valueOf(cell.getId())).setGrafico(areaGrafica.getAreaGrafico().getGraph());
+                } else if(AreaGrafica.getMapaGraficoAtributos().containsKey(Integer.valueOf(cell.getId()))) {
+                	AreaGrafica.getMapaGraficoAtributos().get(Integer.valueOf(cell.getId())).setForma(cell);
+                	AreaGrafica.getMapaGraficoAtributos().get(Integer.valueOf(cell.getId())).setGrafico(areaGrafica.getAreaGrafico().getGraph());
+                } else if (AreaGrafica.getMapaGraficoRelacionamentos().containsKey(Integer.valueOf(cell.getId()))) {
+                	AreaGrafica.getMapaGraficoRelacionamentos().get(Integer.valueOf(cell.getId())).setCell(cell);
+                	AreaGrafica.getMapaGraficoRelacionamentos().get(Integer.valueOf(cell.getId())).setGrafico(areaGrafica.getAreaGrafico().getGraph());	
+                } else if (AreaGrafica.getMapaGraficoAgregacao().containsKey(Integer.valueOf(cell.getId()))) {
+                	AreaGrafica.getMapaGraficoAgregacao().get(Integer.valueOf(cell.getId())).setCell(cell);
+                	AreaGrafica.getMapaGraficoAgregacao().get(Integer.valueOf(cell.getId())).setGrafico(areaGrafica.getAreaGrafico().getGraph());
                 }
                 
             }
