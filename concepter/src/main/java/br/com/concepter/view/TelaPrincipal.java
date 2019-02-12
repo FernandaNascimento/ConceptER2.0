@@ -11,6 +11,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -46,6 +48,9 @@ import br.com.concepter.model.enuns.TipoAtributoEnum;
 import br.com.concepter.model.enuns.TipoEntidadeEnum;
 import br.com.concepter.model.enuns.TipoEspecializacaoEnum;
 import br.com.concepter.utils.XmlUtils;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.ImageIcon;
 
 
 public class TelaPrincipal extends javax.swing.JFrame {
@@ -62,6 +67,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private static TipoAtributoEnum tipoAtributo;
 	private static TipoEspecializacaoEnum tipoEspecializacao;
 	private static TipoEntidadeEnum tipoEntidade;
+	
 	
 	/**
 	 * Flag indicating whether the current graph has been modified 
@@ -123,9 +129,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToggleButton13 = new javax.swing.JToggleButton();
 		jSeparator16 = new javax.swing.JToolBar.Separator();
 		jToggleButton14 = new javax.swing.JToggleButton();
-		//jSeparator15 = new javax.swing.JToolBar.Separator();
 		jToggleButton15 = new javax.swing.JToggleButton();
-		//jSeparator14 = new javax.swing.JToolBar.Separator();
 		jToggleButton16 = new javax.swing.JToggleButton();
 		jSeparator23 = new javax.swing.JToolBar.Separator();
 		jMenuBarTelaPrincipal = new javax.swing.JMenuBar();
@@ -151,27 +155,35 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Object[] options = { "Salvar", "Não Salvar", "Cancelar" };
-				int ret = JOptionPane.showOptionDialog(null, "Suas alterações serão perdidas se não forem salvas", "ConceptER",
-						JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
-						options, options[0]);
-				if(ret == JOptionPane.OK_OPTION){
-					JFileChooser jfc = new JFileChooser();
-
-					if(StringUtils.isEmpty(PATH_FILE)) {
-						if(jfc.showSaveDialog(jMenu1) == JFileChooser.APPROVE_OPTION){
-							PATH_FILE = jfc.getSelectedFile().getPath() ;				
-						}	
-					}
-					if(controller.save(areaGrafica, PATH_FILE)) {
+				
+				if(modified) {
+					Object[] options = { "Salvar", "Não Salvar", "Cancelar" };
+					int ret = JOptionPane.showOptionDialog(null, "Suas alterações serão perdidas se não forem salvas", "ConceptER",
+							JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
+							options, options[0]);
+					if(ret == JOptionPane.OK_OPTION){
+						JFileChooser jfc = new JFileChooser();
+						
+						if(StringUtils.isEmpty(PATH_FILE)) {
+							if(jfc.showSaveDialog(jMenu1) == JFileChooser.APPROVE_OPTION){
+								PATH_FILE = jfc.getSelectedFile().getPath() ;				
+							}	
+						}
+						if(controller.save(areaGrafica, PATH_FILE)) {
+							setVisible(false);
+							dispose();
+						}
+						
+					} else if (ret == JOptionPane.NO_OPTION) {
 						setVisible(false);
 						dispose();
 					}
-
-				} else if (ret == JOptionPane.NO_OPTION) {
+					
+				} else {
 					setVisible(false);
 					dispose();
 				}
+				
 			}
 		});
 
@@ -182,7 +194,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 				formWindowActivated(evt);
 			}
 		});
-
+		
 		areaGrafica.setBackground(java.awt.Color.white);
 		areaGrafica.setBorder(null);
 		areaGrafica.setForeground(new java.awt.Color(255, 255, 255));
@@ -193,8 +205,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToolBar1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 		jToolBar1.setRollover(true);
 		jToolBar1.setAlignmentY(0.0F);
-		jToolBar1.setMinimumSize(new Dimension(40, 209));
-		jToolBar1.setPreferredSize(new Dimension(40, 209));
+		jToolBar1.setMinimumSize(new Dimension(50, 209));
+		jToolBar1.setPreferredSize(new Dimension(50, 209));
 		jToolBar1.add(jSeparator22);
 
 		jToggleButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/concepter/view/resources/imagens/Retanguloo.jpg"))); // NOI18N
@@ -348,7 +360,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jToolBar1.add(jSeparator19);
 		
 	
-		jToggleButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/concepter/view/resources/imagens/Círculo C.png"))); // NOI18N
+		jToggleButton16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/concepter/view/resources/imagens/CirculoU.png"))); // NOI18N
 		jToggleButton16.setToolTipText("Especialização");
 		jToggleButton16.setFocusable(false);
 		jToggleButton16.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -409,43 +421,36 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		});
 		jToolBar1.add(jToggleButton13);
 		jToolBar1.add(jSeparator16);
-		/*
-		jToggleButton14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/concepter/view/resources/imagens/Retangulo losango.jpg"))); // NOI18N
-		jToggleButton14.setToolTipText("Agregação Ternária");
-		jToggleButton14.setFocusable(false);
-		jToggleButton14.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-		jToggleButton14.setPreferredSize(new java.awt.Dimension(34, 23));
-		jToggleButton14.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-		jToggleButton14.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				onlyOneButtonPressed(jToggleButton14);
-				jToggleButton14ActionPerformed(evt);
-			}
-		});
-		jToolBar1.add(jToggleButton14);
-		jToolBar1.add(jSeparator15);
-
-		jToggleButton15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/concepter/view/resources/imagens/Retangulo losango.jpg"))); // NOI18N
-		jToggleButton15.setToolTipText("Agregação Quaternária");
-		jToggleButton15.setFocusable(false);
-		jToggleButton15.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-		jToggleButton15.setPreferredSize(new java.awt.Dimension(34, 23));
-		jToggleButton15.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-		jToggleButton15.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				onlyOneButtonPressed(jToggleButton15);
-				jToggleButton15ActionPerformed(evt);
-			}
-		});
-		jToolBar1.add(jToggleButton15);
-		jToolBar1.add(jSeparator14);
-        */
+		
 		jMenu1.setText("Arquivo");
 
 		jMenuItem1.setText("Novo");
 		jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jMenuItem1ActionPerformed(evt);
+				if(modified) {
+					Object[] options = { "Salvar", "Não Salvar", "Cancelar" };
+					int ret = JOptionPane.showOptionDialog(null, "Suas alterações serão perdidas se não forem salvas", "ConceptER",
+							JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
+							options, options[0]);
+					if(ret == JOptionPane.OK_OPTION){
+						JFileChooser jfc = new JFileChooser();
+						
+						if(StringUtils.isEmpty(PATH_FILE)) {
+							if(jfc.showSaveDialog(jMenu1) == JFileChooser.APPROVE_OPTION){
+								PATH_FILE = jfc.getSelectedFile().getPath() ;				
+							}	
+						}
+						if(controller.save(areaGrafica, PATH_FILE)) {
+							jMenuItem1ActionPerformed(evt);
+						}
+						
+					} else if (ret == JOptionPane.NO_OPTION) {
+						jMenuItem1ActionPerformed(evt);
+					}
+					
+				} else {
+					jMenuItem1ActionPerformed(evt);
+				}
 			}
 		});
 		jMenu1.add(jMenuItem1);
@@ -488,8 +493,33 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jMenuItem8.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				dispose();
+				if(modified) {
+					Object[] options = { "Salvar", "Não Salvar", "Cancelar" };
+					int ret = JOptionPane.showOptionDialog(null, "Suas alterações serão perdidas se não forem salvas", "ConceptER",
+							JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
+							options, options[0]);
+					if(ret == JOptionPane.OK_OPTION){
+						JFileChooser jfc = new JFileChooser();
+						
+						if(StringUtils.isEmpty(PATH_FILE)) {
+							if(jfc.showSaveDialog(jMenu1) == JFileChooser.APPROVE_OPTION){
+								PATH_FILE = jfc.getSelectedFile().getPath() ;				
+							}	
+						}
+						if(controller.save(areaGrafica, PATH_FILE)) {
+							setVisible(false);
+							dispose();
+						}
+						
+					} else if (ret == JOptionPane.NO_OPTION) {
+						setVisible(false);
+						dispose();
+					}
+					
+				} else {
+					setVisible(false);
+					dispose();
+				}
 				
 			}
 		});
@@ -500,6 +530,29 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jMenu2.setText("Ferramenta");
 
 		jMenuBarTelaPrincipal.add(jMenu2);
+		
+		mntmUndo = new JMenuItem("Desfazer         (Ctrl+Z)");
+		mntmUndo.setEnabled(false);
+		mntmUndo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				undo();				
+			}
+		});
+		jMenu2.add(mntmUndo);
+		
+		mntmRedo = new JMenuItem("Refazer           (Ctrl+Y)");
+		mntmRedo.setEnabled(false);
+		mntmRedo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				redo();
+			}
+		});
+		jMenu2.add(mntmRedo);
+
 		
 		mntmOpcoes = new JMenuItem("Opções");
 		mntmOpcoes.addActionListener(new ActionListener() {
@@ -522,6 +575,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		jMenuBarTelaPrincipal.add(jMenu3);
 
 		setJMenuBar(jMenuBarTelaPrincipal);
+		
+		lblH = new JLabel("");
+		jMenuBarTelaPrincipal.add(lblH);
+		lblH.setToolTipText("Selecione um dos elementos para inserção no gráfico");
+		lblH.setIcon(new ImageIcon(TelaPrincipal.class.getResource("/br/com/concepter/view/resources/imagens/news/icon.png")));
+		lblH.setHorizontalAlignment(SwingConstants.RIGHT);
 
 		// Creates the graph outline component
 		graphOutline = new mxGraphOutline(areaGrafica.getAreaGrafico());
@@ -542,6 +601,24 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		// Updates the modified flag if the graph model changes
 		areaGrafica.getAreaGrafico().getGraph().getModel().addListener(mxEvent.CHANGE, changeTracker);
 
+		areaGrafica.getAreaGrafico().addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+				if((e.getKeyCode()==KeyEvent.VK_Z ) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+					System.out.println("UNDO");
+					
+					undo();
+					
+				} else if ((e.getKeyCode()==KeyEvent.VK_Y ) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+					System.out.println("REDO");
+					redo();
+				}
+				
+			}
+			
+			
+		});
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(
@@ -561,6 +638,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
 				);
 		pack();
 		setLocationRelativeTo(null);
+
+		
 	}// </editor-fold>//GEN-END:initComponents
 
 	/**
@@ -571,6 +650,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		public void invoke(Object source, mxEventObject evt)
 		{
 			setModified(true);
+			mntmUndo.setEnabled(true);
+			//AreaGrafica a = new AreaGrafica(areaGrafica);
+			//history.add(a);
+			//System.out.println(history.size());
 		}
 	};
 	
@@ -582,6 +665,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	{
 		boolean oldValue = this.modified;
 		this.modified = modified;
+		//System.out.println("Modificou");
 
 		firePropertyChange("modified", oldValue, modified);
 
@@ -590,8 +674,38 @@ public class TelaPrincipal extends javax.swing.JFrame {
 			//updateTitle();
 		}
 	}
+	
+	public void undo() {
+		//if(countUndo>history.size()) {
+			//areaGrafica = history.get(countUndo);
+			//countUndo++;
+			//areaGrafica.getAreaGrafico().getGraph().refresh();
+		//}
+		if(areaGrafica.undoMgr.canUndo()){
+			areaGrafica.undoMgr.undo();
+			mntmRedo.setEnabled(true);
+			if(!areaGrafica.undoMgr.canUndo()) {
+				mntmUndo.setEnabled(false);
+			}
+		}
+	}
+	
+	public void redo() {
+		//if(countRedo>history.size()) {
+		//	areaGrafica = history.get(countRedo);
+		//	countRedo++;
+		//	areaGrafica.getAreaGrafico().refresh();
+		//}
+		if(areaGrafica.undoMgr.canRedo()){
+			areaGrafica.undoMgr.redo();
+			if(!areaGrafica.undoMgr.canRedo()) {
+				mntmRedo.setEnabled(false);
+			}
+		}
+	}
 
 	public static void desclicarBotoes(){
+		lblH.setText("");
 		TelaPrincipal.jToggleButton1.setSelected(false);
 		TelaPrincipal.jToggleButton2.setSelected(false);
 		TelaPrincipal.jToggleButton3.setSelected(false);
@@ -736,6 +850,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if (botao == 0){
 			botao = 1;
 			tipoEntidade = TipoEntidadeEnum.FORTE;
+			lblH.setText("Clique no gráfico para inserir a Entidade Forte");
 		}else {
 			botao = 0;
 			tipoEntidade = null;
@@ -746,6 +861,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if (botao == 0){
 			botao = 1;
 			tipoEntidade = TipoEntidadeEnum.FRACA;
+			lblH.setText("Clique no gráfico para inserir a Entidade Fraca");
 		}else {
 			botao = 0;
 			tipoEntidade = null;
@@ -756,6 +872,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if (botao == 0){
 			botao = 2;
 			tipoAtributo = TipoAtributoEnum.SIMPLES;
+			lblH.setText("Clique em uma Entidade/Atributo/Relacionamento para inserir o Atributo Simples");
 		}else {
 			botao = 0;
 			tipoAtributo = null;
@@ -766,6 +883,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if (botao == 0){
 			botao = 2;
 			tipoAtributo = TipoAtributoEnum.CHAVE;
+			lblH.setText("Clique em uma Entidade/Atributo/Relacionamento para inserir o Atributo Chave");
 		}else {
 			botao = 0;
 			tipoAtributo = null;
@@ -776,6 +894,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if (botao == 0){
 			botao = 2;
 			tipoAtributo = TipoAtributoEnum.COMPOSTO;
+			lblH.setText("Clique em uma Entidade/Atributo/Relacionamento para inserir o Atributo Composto");
 		}else {
 			botao = 0;
 			tipoAtributo = null;
@@ -786,6 +905,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if (botao == 0){
 			botao = 2;
 			tipoAtributo = TipoAtributoEnum.MULTIVALORADO;
+			lblH.setText("Clique em uma Entidade/Atributo/Relacionamento para inserir o Atributo Multivalorado");
 		}else {
 			botao = 0;
 			tipoAtributo = null;
@@ -796,6 +916,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if (botao == 0){
 			botao = 2;
 			tipoAtributo = TipoAtributoEnum.DERIVADO;
+			lblH.setText("Clique em uma Entidade/Atributo/Relacionamento para inserir o Atributo Derivado");
 		}else {
 			botao = 0;
 			tipoAtributo = null;
@@ -805,6 +926,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private void jToggleButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton8ActionPerformed
 		if (botao == 0){
 			botao =3;
+			lblH.setText("Clique em duas Entidades para inserir o Relacionamento Binário");
 		}else{
 			botao = 0;
 		}
@@ -813,6 +935,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private void jToggleButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton9ActionPerformed
 		if (botao == 0){
 			botao =4;
+			lblH.setText("Clique em três Entidades para inserir o Relacionamento Ternário");
 		}else{
 			botao = 0;
 		}
@@ -821,6 +944,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private void jToggleButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton10ActionPerformed
 		if (botao == 0){
 			botao =5;
+			lblH.setText("Clique em quatro Entidades para inserir o Relacionamento Quaternário");
 		}else{
 			botao = 0;
 		}
@@ -830,6 +954,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if (botao == 0){
 			botao = 6;
 			tipoEspecializacao = TipoEspecializacaoEnum.DISJUNCAO;
+			lblH.setText("Clique em uma Entidade para inserir a Disjunção");
 		}else{
 			botao = 0;
 			tipoEspecializacao = null;
@@ -840,6 +965,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 		if(botao == 0){
 			botao = 6;
 			tipoEspecializacao = TipoEspecializacaoEnum.SOBREPOSICAO;
+			lblH.setText("Clique em uma Entidade para inserir a Sobreposição");
 		}else{
 			botao = 0;
 			tipoEspecializacao = null;
@@ -849,31 +975,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private void jToggleButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton13ActionPerformed
 		if(botao == 0){
 			botao = 7;
+			lblH.setText("Clique em um Relacionamento e em uma Entidade para inserir a Agregação");
 		}else{
 			botao = 0;
 		}
 	}//GEN-LAST:event_jToggleButton13ActionPerformed
- /*
-	private void jToggleButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton14ActionPerformed
-		if(botao == 0){
-			botao = 8;
-		}else{
-			botao = 0;
-		}
-	}//GEN-LAST:event_jToggleButton14ActionPerformed
 
-	private void jToggleButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton15ActionPerformed
-		if(botao == 0){
-			botao = 9;
-		}else{
-			botao = 0;
-		}
-	}//GEN-LAST:event_jToggleButton15ActionPerformed
-	*/
 	private void jToggleButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton12ActionPerformed
 		if(botao == 0){
 			botao = 6;
 			tipoEspecializacao = TipoEspecializacaoEnum.ESPECIALIZACAO;
+			lblH.setText("Clique em uma Entidade para inserir a Especialização");
 		}else{
 			botao = 0;
 			tipoEspecializacao = null;
@@ -1042,8 +1154,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private javax.swing.JToolBar.Separator jSeparator11;
 	private javax.swing.JToolBar.Separator jSeparator12;
 	private javax.swing.JToolBar.Separator jSeparator13;
-	//private javax.swing.JToolBar.Separator jSeparator14;
-	//private javax.swing.JToolBar.Separator jSeparator15;
 	private javax.swing.JToolBar.Separator jSeparator16;
 	private javax.swing.JToolBar.Separator jSeparator17;
 	private javax.swing.JToolBar.Separator jSeparator18;
@@ -1079,5 +1189,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 	private javax.swing.JToolBar jToolBar1;
 	private mxGraphOutline graphOutline;
 	private JMenuItem mntmOpcoes;
-	// End of variables declaration//GEN-END:variables
+	private JMenuItem mntmUndo;
+	private JMenuItem mntmRedo;
+	private static JLabel lblH;
 }

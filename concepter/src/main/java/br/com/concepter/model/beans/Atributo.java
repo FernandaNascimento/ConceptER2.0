@@ -96,16 +96,16 @@ public class Atributo {
             }else {
             	posy = posy-50;
             }
-            /*if(AreaGrafica.getMapaGraficoEntidades().containsKey(Integer.valueOf(((mxCell) objeto).getId()))) {
+            if(AreaGrafica.getMapaGraficoEntidades().containsKey(Integer.valueOf(((mxCell) objeto).getId()))) {
             	int size = AreaGrafica.getMapaGraficoEntidades().get(Integer.valueOf(((mxCell) objeto).getId())).getAtributos().size();
-            	for(int i = 0; i<=size; i++) {
+            	for(int i = 0; i<size; i++) {
             		Atributo at = AreaGrafica.getMapaGraficoEntidades().get(Integer.valueOf(((mxCell) objeto).getId())).getAtributos().get(i);
             		if(this.id!=at.getId() && posx==at.pX ) {
             			posx = posx + 150;
             		}
             		
             	}
-            }*/
+            }
             
             
             atributo = this.grafico.insertVertex(parent, null, this.nome, posx, posy, this.tamanhoLargura, this.tamanhoAltura, caracteristicas);
@@ -148,7 +148,9 @@ public class Atributo {
                 this.grafico.insertEdge(parent, null, null, atributo_1, atributo,"startArrow=none;endArrow=none;");
                 this.grafico.insertEdge(parent, null, null, atributo_2, atributo,"startArrow=none;endArrow=none;");
             }
-        }
+        }catch (Exception e) {
+			e.printStackTrace();
+		}
         finally{
             this.id = ((mxCell) atributo).getId();             
             this.forma = (mxCell) atributo;

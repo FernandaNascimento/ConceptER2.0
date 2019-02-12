@@ -6,7 +6,6 @@
 package br.com.concepter.view;
 import javax.swing.ImageIcon;
 import java.awt.Toolkit;
-import javax.swing.JTextPane;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle.ComponentPlacement;

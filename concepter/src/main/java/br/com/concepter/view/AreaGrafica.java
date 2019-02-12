@@ -6,15 +6,21 @@
 
 package br.com.concepter.view;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -27,8 +33,18 @@ import javax.swing.JPopupMenu;
 import org.apache.commons.lang3.StringUtils;
 
 import com.mxgraph.model.mxCell;
+import com.mxgraph.shape.mxITextShape;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.swing.view.mxInteractiveCanvas;
+import com.mxgraph.util.mxConstants;
+import com.mxgraph.util.mxEvent;
+import com.mxgraph.util.mxEventObject;
+import com.mxgraph.util.mxEventSource;
 import com.mxgraph.util.mxRectangle;
+import com.mxgraph.util.mxUndoManager;
+import com.mxgraph.util.mxUndoableEdit;
+import com.mxgraph.util.mxUtils;
+import com.mxgraph.view.mxCellState;
 import com.mxgraph.view.mxGraph;
 
 import br.com.concepter.model.beans.Agregacao;
@@ -76,46 +92,166 @@ public class AreaGrafica extends JInternalFrame {
 	private JMenu menuCardinalidade;
 	private JMenuItem menuItemDelete;
 	private JMenuItem menuItemEspecializacao;
-	//private JMenuItem menuItemBinario;
-	//private JMenuItem menuItemTernario;
-	//private JMenuItem menuItemQuaternario;
 	private JMenu menuAgregacao;
 	private JMenu menuTotalidade;
 	private JMenu menuParcialidade;
 	private JMenu menuNn;
 	private JMenu menu1n;
 	private static double px, py;
+	mxUndoManager undoMgr;
 
 	public AreaGrafica(){
 		AreaGrafica.grafico = new mxGraph();
+		undoMgr = new mxUndoManager();
+
+		mxEventSource.mxIEventListener listener = new mxEventSource.mxIEventListener() {
+			@Override
+			public void invoke(Object sender, mxEventObject evt) {
+				undoMgr.undoableEditHappened((mxUndoableEdit) evt.getProperty("edit"));
+			}
+		};
+
+
+		AreaGrafica.areaGrafico = new mxGraphComponent(grafico) {
+				/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+				public mxInteractiveCanvas createCanvas()
+	    {
+	        return new mxInteractiveCanvas(){
+	            @Override
+	            public Object drawLabel(String text, mxCellState state, boolean html)
+	            {
+	                Map<String, Object> style = state.getStyle();
+	                //mxIShape shapeL = getShape(style);
+	                mxITextShape shape = getTextShape(style, html);
+	                if (g != null && shape != null && drawLabels && text != null
+	                        && text.length() > 0)
+	                {
+	                    // Creates a temporary graphics instance for drawing this shape
+	                    float opacity = mxUtils.getFloat(style,
+	                            mxConstants.STYLE_TEXT_OPACITY, 100);
+	                    Graphics2D previousGraphics = g;
+	                    if(((mxCell) state.getCell()).isVertex() || !text.equalsIgnoreCase("U")){
+	                        g = createTemporaryGraphics(style, opacity, null);                                  
+	                    }else{
+	                        //quadrant will be true if the edge is NE or SW
+	                        Object target = ((mxCell) state.getCell()).getTarget();
+	                        Object source = ((mxCell) state.getCell()).getSource();
+	                        boolean quadrant1 = false;
+	                        boolean quadrant2 = false;
+	                        boolean quadrant3 = false;
+	                        boolean quadrant4 = false;
+
+	                        if(((mxCell)target).getGeometry().getCenterX()<((mxCell)source).getGeometry().getCenterX()){
+	                            if(((mxCell)target).getGeometry().getCenterY()>((mxCell)source).getGeometry().getCenterY()){
+	                            	quadrant1 =  true;
+	                            }
+	                        }
+	                        if(((mxCell)target).getGeometry().getCenterX()>((mxCell)source).getGeometry().getCenterX()){
+	                            if(((mxCell)target).getGeometry().getCenterY()>((mxCell)source).getGeometry().getCenterY()){
+	                              	
+	                                quadrant2 =  true;
+	                            }
+	                        }
+	                        if(((mxCell)target).getGeometry().getCenterX()>((mxCell)source).getGeometry().getCenterX()){
+	                            if(((mxCell)target).getGeometry().getCenterY()<((mxCell)source).getGeometry().getCenterY()){
+	                              	
+	                                quadrant3 =  true;
+	                            }
+	                        }
+	                        if(((mxCell)target).getGeometry().getCenterX()<((mxCell)source).getGeometry().getCenterX()){
+	                            if(((mxCell)target).getGeometry().getCenterY()<((mxCell)source).getGeometry().getCenterY()){
+	                              	
+	                                quadrant4 =  true;
+	                            }
+	                        }
+	                        g = createTemporaryGraphics(style, opacity, state, state.getLabelBounds(),quadrant1, quadrant2, quadrant3,quadrant4);
+	                    }
+
+	                    // Draws the label background and border
+	                    Color bg = mxUtils.getColor(style,
+	                            mxConstants.STYLE_LABEL_BACKGROUNDCOLOR);
+	                    Color border = mxUtils.getColor(style,
+	                            mxConstants.STYLE_LABEL_BORDERCOLOR);
+	                    paintRectangle(state.getLabelBounds().getRectangle(), bg, border);
+
+	                    // Paints the label and restores the graphics object
+	                    shape.paintShape(this, text, state, style);
+	                    g.dispose();
+	                    g = previousGraphics;
+	                }
+
+	                return shape;
+	            }
+	            public Graphics2D createTemporaryGraphics(Map<String, Object> style,
+	                    float opacity, mxRectangle bounds, mxRectangle labelbounds, boolean quad1, boolean quad2, boolean quad3, boolean quad4)
+	            {
+	                Graphics2D temporaryGraphics = (Graphics2D) g.create();
+
+	                // Applies the default translate
+	                temporaryGraphics.translate(translate.getX(), translate.getY());
+
+	                // setup the rotation for the label
+	                double angle = 0;
+	                double rotation =0;
+	                //System.out.println("Angulo "+angle);
+	                //System.out.println("Quadrante "+quad);
+	                if(quad1) {
+	                	angle = java.lang.Math.atan(bounds.getHeight()/bounds.getWidth());
+	                	rotation = Math.toDegrees(-angle)-90;
+	                } else if (quad2) {
+	                	angle = java.lang.Math.atan(bounds.getHeight()/bounds.getWidth());
+	                	rotation = Math.toDegrees(angle)+90;
+	                } else if (quad3) {
+	                	angle = java.lang.Math.atan(bounds.getWidth()/bounds.getHeight());
+	                	rotation = Math.toDegrees(angle);
+	                } else if (quad4) {
+	                	angle = java.lang.Math.atan(bounds.getWidth()/bounds.getHeight());
+	                	rotation = Math.toDegrees(-angle);
+	                }
+	               
+	                // Applies the rotation and translation on the graphics object
+	                if (bounds != null)
+	                {
+	                    if (rotation != 0)
+	                    {
+	                        temporaryGraphics.rotate(Math.toRadians(rotation),
+	                        		labelbounds.getCenterX(), labelbounds.getCenterY());
+	                        
+	                    }
+	                }
+
+	                // Applies the opacity to the graphics object
+	                if (opacity != 100)
+	                {
+	                    temporaryGraphics.setComposite(AlphaComposite.getInstance(
+	                            AlphaComposite.SRC_OVER, opacity / 100));
+	                }
+
+	                return temporaryGraphics;
+	            }
+	        };
+	    }
+
+	};
+
+		//Quando um evento UNDO acontecer o mesmo será memorizado
+		AreaGrafica.areaGrafico.getGraph().getModel().addListener(mxEvent.UNDO, listener);
+		AreaGrafica.areaGrafico.getGraph().getView().addListener(mxEvent.UNDO, listener);
+		
 		AreaGrafica.grafico.setMinimumGraphSize(new mxRectangle(83,0,500,200));
-
-		AreaGrafica.areaGrafico = new mxGraphComponent(grafico);
-
 		AreaGrafica.areaGrafico.setPreferredSize(new Dimension(500,200));
 		AreaGrafica.areaGrafico.setLocation(83,0);
-		AreaGrafica.areaGrafico.getGraphControl().addMouseListener(new BotaoEsquerdoCliqueGrafico());
 		AreaGrafica.areaGrafico.getGraphControl().addMouseListener(new ObjetoMer_Selecionado());
+		AreaGrafica.areaGrafico.getGraphControl().addMouseListener(new BotaoEsquerdoCliqueGrafico());
 		AreaGrafica.areaGrafico.getGraphControl().addMouseListener(new ObjetoMer_RigthClick());
-
+				
 		AreaGrafica.areaGrafico.putClientProperty("DropAllowed", Boolean.TRUE);
-		//AreaGrafica.areaGrafico.setBorder( BorderFactory.createLineBorder(Color.red));
 
-		/*this.areaGrafico.getGraphControl().addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				System.out.println("Moved X= "+ e.getX()+" Y= "+ e.getY());
-
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				System.out.println("Dragged X= "+ e.getX()+" Y= "+ e.getY());				
-			}
-		});
-
-		this.areaGrafico.addKeyListener(new KeyAdapter() {
+		AreaGrafica.areaGrafico.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 
@@ -124,7 +260,9 @@ public class AreaGrafica extends JInternalFrame {
 				}
 
 			}
-		});*/
+
+
+		});
 
 
 		AreaGrafica.grafico.setEdgeLabelsMovable(false);   //Nao permite que a descricao da seta seja movida
@@ -157,12 +295,9 @@ public class AreaGrafica extends JInternalFrame {
 		//Item para o Menu popup de Objetos Mer
 		menuItemDelete = new JMenuItem("Delete");
 		menuItemEspecializacao = new JMenu();
-		
+
 
 		menuAgregacao = new JMenu("Agregação");
-		//menuItemBinario = new JMenuItem("Binário");
-		//menuItemTernario = new JMenuItem("Ternário");
-		//menuItemQuaternario = new JMenuItem("Quaternário");
 
 		menuParcialidade = new JMenu("Parcialidade");
 		menuTotalidade = new JMenu("Totalidade");
@@ -174,6 +309,7 @@ public class AreaGrafica extends JInternalFrame {
 
 		menuItemDelete.addActionListener(new BotaoDeletarPopupMenu());
 	}
+
 
 	public mxGraph getGrafico(){
 		return grafico;
@@ -275,6 +411,8 @@ public class AreaGrafica extends JInternalFrame {
 		}
 	}
 
+
+
 	private void limparMenuPopup(){
 		menuCompletude.removeAll();
 		menuCardinalidade.removeAll();
@@ -284,7 +422,7 @@ public class AreaGrafica extends JInternalFrame {
 
 		menu1n.removeAll();
 		menuNn.removeAll();
-		
+
 		menuItemEspecializacao.removeAll();
 
 		menuPopup.remove(menuCompletude);
@@ -442,11 +580,11 @@ public class AreaGrafica extends JInternalFrame {
 			TelaPrincipal.setBotao(7);
 		}    
 	}
-	
+
 	public class TrocaEspecializacao implements ActionListener {
-		
+
 		private Especializacao especializacao;
-		
+
 		public TrocaEspecializacao(Especializacao especializacao) {
 			this.especializacao = especializacao;
 		}
@@ -457,7 +595,7 @@ public class AreaGrafica extends JInternalFrame {
 			if(especializacao.getTipoEspecializacao() == TipoEspecializacaoEnum.DISJUNCAO) {
 				especializacao.getCell().setValue("o");
 				especializacao.setTipoEspecializacao(TipoEspecializacaoEnum.SOBREPOSICAO);
-				
+
 			} else {
 				especializacao.getCell().setValue("d");
 				especializacao.setTipoEspecializacao(TipoEspecializacaoEnum.DISJUNCAO);
@@ -555,15 +693,8 @@ public class AreaGrafica extends JInternalFrame {
 		public void mouseClicked(MouseEvent e){
 			if(e.getButton() == 3){
 				boolean isRelacionamento = false;
-				//boolean isEntidade = false;
-				//boolean isAtributo = false;
-				//boolean isAgregacao = false;
-				//boolean isEspecializaco = false;
 
-				//Entidade entidadeSelecionado = null;
 				Relacionamento relacionamentoSelecionado = null;
-				//Atributo atributoSelecionado = null;
-				//Agregacao agregacaoSelecionado = null;
 				Especializacao especializacaoSelecionado = null;
 
 				limparMenuPopup();
@@ -572,28 +703,11 @@ public class AreaGrafica extends JInternalFrame {
 
 				if(cell != null ){
 					relacionamentoSelecionado = (Relacionamento) mapaGraficoRelacionamentos.get( Integer.parseInt( ( (mxCell) areaGrafico.getCellAt(e.getX(), e.getY()) ).getId() ));
-					//entidadeSelecionado = (Entidade) mapaGraficoEntidades.get( Integer.parseInt( ( (mxCell) areaGrafico.getCellAt(e.getX(), e.getY()) ).getId() ) );
-					//atributoSelecionado =  (Atributo) mapaGraficoAtributos.get( Integer.parseInt( ( (mxCell) areaGrafico.getCellAt(e.getX(), e.getY()) ).getId() ) );
-					//agregacaoSelecionado =  (Agregacao) mapaGraficoAgregacao.get( Integer.parseInt( ( (mxCell) areaGrafico.getCellAt(e.getX(), e.getY()) ).getId() ) );
 					especializacaoSelecionado =  (Especializacao) mapaGraficoEspecializacao.get( Integer.parseInt( ( (mxCell) areaGrafico.getCellAt(e.getX(), e.getY()) ).getId() ) );
 
 					if(relacionamentoSelecionado != null){
 						isRelacionamento = true;
 					}
-
-					/*if(entidadeSelecionado != null){
-						isEntidade = true;
-					}
-
-					if(agregacaoSelecionado != null){
-						isAgregacao = true;
-					}
-
-					if(atributoSelecionado != null){
-						if(atributoSelecionado.getTipoAtributo().equals(TipoAtributoEnum.COMPOSTO) || atributoSelecionado.getTipoAtributo().equals(TipoAtributoEnum.MULTIVALORADO)){
-							isAtributo = true;
-						}
-					}*/
 
 					if(isRelacionamento){
 						menuPopup.add(menuCompletude);
@@ -665,7 +779,7 @@ public class AreaGrafica extends JInternalFrame {
 
 		@Override
 		public void mouseClicked(MouseEvent e){
-			System.out.println("Clicou! X- "+e.getX()+" Y- "+e.getY());
+			//System.out.println("Clicou! X- "+e.getX()+" Y- "+e.getY());
 			boolean isRelacionamento = false;
 			boolean isEntidade = false;
 			boolean isAtributo = false;

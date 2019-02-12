@@ -85,7 +85,7 @@ public class Especializacao {
                 Entidade entidade_2 = new Entidade(this.grafico, "Entidade" + AreaGrafica.getCont_entidade(), posx + 125, posy + 170, TipoEntidadeEnum.FORTE);
                 entidade_2.add();
                 this.entidades.add(entidade_2);
-                this.grafico.insertEdge(parent, null, "U", entidade_2.getCell(), this.cell,"startArrow=none;endArrow=none;");
+                this.grafico.insertEdge(parent, null, "U", entidade_2.getCell(), this.cell,"fontColor=#6482B9;strokeColor=#6482B9;startArrow=none;fontSize=25;endArrow=none;strokeWidth=2;");
                 this.grafico.insertEdge(parent, null, "", this.cell, entidade.getCell(),"startArrow=none;endArrow=none;dashed=1;");
             } else {
             	this.cell = entidade.getCell();            	
@@ -97,16 +97,18 @@ public class Especializacao {
             mxStylesheet stylesheet = this.grafico.getStylesheet();
             
             String myStyleName = "myImageStyle";
-            
+                 	
+        	
             // define image style           
             Hashtable<String, Object> style = new Hashtable<String, Object>();
             style.put( mxConstants.STYLE_SHAPE, mxConstants.SHAPE_IMAGE);
-            style.put( mxConstants.STYLE_IMAGE, "file:/c:/images/estarContido.png");
+            style.put( mxConstants.STYLE_IMAGE, "/br/com/concepter/view/resources/imagens/c.png");
             style.put( mxConstants.STYLE_VERTICAL_LABEL_POSITION, mxConstants.ALIGN_BOTTOM);
+            
+            
 
             stylesheet.putCellStyle( myStyleName, style);
-            
-            this.grafico.insertEdge(parent, null, "U", entidade_1.getCell(), this.cell,"startArrow=none;endArrow=none;");
+            this.grafico.insertEdge(parent, null, "U", entidade_1.getCell(), this.cell,"fontColor=#6482B9;strokeColor=#6482B9;startArrow=none;fontSize=25;endArrow=none;strokeWidth=2;");
         } catch(Exception e) {
         	e.printStackTrace();
         } finally{

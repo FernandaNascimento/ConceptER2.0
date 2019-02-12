@@ -115,7 +115,7 @@ public class Entidade implements Serializable{
                                                             this.tamanhoAltura, 
                                                             caracteristicas);
 
-                this.grafico.insertEdge(parent, null, "U", especializacao.getCell(), this.cell, "startArrow=none;endArrow=none;");
+                this.grafico.insertEdge(parent, null, "U", especializacao.getCell(), this.cell, "fontColor=#6482B9;strokeColor=#6482B9;startArrow=none;fontSize=25;endArrow=none;strokeWidth=2;");
             }
             finally{
                     //this.especializacao = especializacao;
